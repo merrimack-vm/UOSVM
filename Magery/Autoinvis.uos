@@ -1,0 +1,6 @@
+while not buffexists 'Invisibility'
+  cast "Invisibility"
+  waitfortarget 15000
+  target! 'self'
+  pause 200
+endwhile
