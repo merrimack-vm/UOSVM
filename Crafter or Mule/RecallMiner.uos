@@ -1,0 +1,724 @@
+//================================================================//
+//=============== Merrimack's Recall Mining Script ===============//
+//============================= v1.2a ============================//
+//=================== Made for Vetus-Mundus.de ===================//
+//================================================================//
+// Important Information:
+// Only works if your server supports bank hives (mobile bank boxes)
+// does not check if your bank is full or contains shovels or concessions!
+// needs soundfile 'warnung.wav' in your UOSteam/Sounds directory to warn you if your character looses hp
+// or your concession runs out. will also play 'arbeitabgeschlossen.wav' if the script is done.
+// requires 9 mining runebooks. Will shoot fireballs at enemies if it sees any.
+// will heal your miner with magery and uses magery recall. will use meditation if mana is low.
+// needs a runebook marked as "home" with a rune to your house / safespot in the first rune slot.
+// script will try to mine all 8 spots around your character, so you won't have to worry about where
+// you mark your runes too much. If you have less than 100 Weight left until weightcap, it will open
+// your bank and start the Organizer 'ore', which you will have to configure yourself.
+// you can do that in UOSteam 'Agenty' -> 'Organizer'. Double click the Organizer entry
+// to rename it to 'ore'. Important! check "Complete" and "Stack" in the Organizer!
+// if you want to pause the script, enable warmode. once you disable it, it will continue
+//================================================================//
+// Preparations
+if not @findtype 0x91a
+  messagebox 'Error' 'No Bank Hive found!'
+  sysmsg 'No Bank Hive found!'
+  stop
+endif
+if not @findtype 0x14ed 'backpack'
+  headmsg 'No Concession was found in your inventory!'
+  headmsg 'Are you sure you want to continue? If so, disable warmode.'
+  warmode 'on'
+  pause 500
+  while war
+    pause 200
+  endwhile
+endif
+warmode 'off'
+msg 'bank'
+pause 200
+if contents 'bank' > 100
+  headmsg 'Bank contains more than 100 items!'
+  headmsg 'Are you sure you want to continue? If so, disable warmode.'
+  warmode 'on'
+  while war
+    pause 200
+  endwhile
+endif
+// if not @findtype 0x14ed 'bank'
+//  headmsg 'Keine Concession in der Bank!'
+//  headmsg 'Sicher, dass Du fortfahren willst? Dann deaktiviere Warmode.'
+//  warmode 'on'
+//  while war
+//    pause 200
+//  endwhile
+//endif
+if not @findtype 0xf39 'backpack'
+  if @findtype 0xf39 'bank'
+    moveitem 'found' 'backpack'
+  elseif
+    headmsg 'You do not have a shovel! Aborting...'
+    stop
+  endif
+endif
+if not @findobject 'MiningBookOne'
+  promptalias 'MiningBookOne'
+endif
+if not @findobject 'MiningBookTwo'
+  promptalias 'MiningBookTwo'
+endif
+if not @findobject 'MiningBookThree'
+  promptalias 'MiningBookThree'
+endif
+if not @findobject 'MiningBookFour'
+  promptalias 'MiningBookFour'
+endif
+if not @findobject 'MiningBookFive'
+  promptalias 'MiningBookFive'
+endif
+if not @findobject 'MiningBookSix'
+  promptalias 'MiningBookSix'
+endif
+if not @findobject 'MiningBookSeven'
+  promptalias 'MiningBookSeven'
+endif
+if not @findobject 'MiningBookEight'
+  promptalias 'MiningBookEight'
+endif
+if not @findobject 'MiningBookNine'
+  promptalias 'MiningBookNine'
+endif
+if not @findobject 'HomeBook'
+  promptalias 'HomeBook'
+endif
+if not listexists 'MiningBook'
+  createlist 'MiningBook'
+  pushlist 'MiningBook' 'MiningBookOne'
+  pushlist 'MiningBook' 'MiningBookTwo'
+  pushlist 'MiningBook' 'MiningBookThree'
+  pushlist 'MiningBook' 'MiningBookFour'
+  pushlist 'MiningBook' 'MiningBookFive'
+  pushlist 'MiningBook' 'MiningBookSix'
+  pushlist 'MiningBook' 'MiningBookSeven'
+  pushlist 'MiningBook' 'MiningBookEight'
+  pushlist 'MiningBook' 'MiningBookNine'
+endif
+if not listexists 'Runes'
+  createlist 'Runes'
+  pushlist 'Runes' 50
+  pushlist 'Runes' 51
+  pushlist 'Runes' 52
+  pushlist 'Runes' 53
+  pushlist 'Runes' 54
+  pushlist 'Runes' 55
+  pushlist 'Runes' 56
+  pushlist 'Runes' 57
+  pushlist 'Runes' 58
+  pushlist 'Runes' 59
+  pushlist 'Runes' 60
+  pushlist 'Runes' 61
+  pushlist 'Runes' 62
+  pushlist 'Runes' 63
+  pushlist 'Runes' 64
+  pushlist 'Runes' 65
+endif
+@removelist 'MiningNope'
+for 0 to 'MiningBook'
+  for 0 to 'Runes'
+    clearjournal
+    while mana < 11
+      while not buffexists 'Meditation'
+        while diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 1000
+        endwhile
+        @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+        while @findobject 'enemy' and @inrange 'enemy' 5
+          if diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 100
+          endif
+          cast 'Fireball' 'enemy'
+          pause 200
+        endwhile
+        useskill 'Meditation'
+        pause 200
+      endwhile
+    endwhile
+    useobject MiningBook[]
+    pause 100
+    headmsg 'Book Serial'
+    headmsg MiningBook[]
+    waitforgump 0x59 15000
+    replygump 0x59 Runes[]
+    headmsg 'Rune'
+    headmsg Runes[]
+    pause 2500
+    // New Plan
+    clearjournal
+    autotargettileoffset 0 -1 0
+    usetype 0xf39
+    while not listexists 'MiningNope'
+      if war
+        headmsg 'warmode aktive, pausing'
+        while war
+          pause 200
+        endwhile
+      endif
+      autotargettileoffset 0 -1 0
+      usetype 0xf39
+      pause 500
+      while diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 1000
+      endwhile
+      @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+      while @findobject 'enemy' and @inrange 'enemy' 5
+        if diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 100
+        endif
+        cast 'Fireball' 'enemy'
+        pause 200
+      endwhile
+      if @injournal 'no metal here to mine' or @injournal 'mine that'
+        createlist 'MiningNope'
+      elseif @injournal 'Target cannot be seen.' or @injournal 'mine there'
+        createlist 'MiningNope'
+      elseif @injournal 'piece is confiscated'
+        messagebox 'Concession' 'Concession ran out! Script paused until warmode cancelled!'
+        sysmsg 'Concession ran out! Script paused until warmode cancelled!'
+        msg 'bank'
+        warmode 'on'
+        while war
+          pause 100
+          while diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 1000
+          endwhile
+          @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+          while @findobject 'enemy' and @inrange 'enemy' 5
+            if diffhits > 10
+              miniheal 'self'
+              playsound 'warnung.wav'
+              pause 100
+            endif
+            cast 'Fireball' 'enemy'
+            pause 200
+          endwhile
+        endwhile
+      endif
+      clearjournal
+    endwhile
+    removelist 'MiningNope'
+    sysmsg 'vein NORTH empty!' 24
+    clearjournal
+    while diffweight < 100
+      pause 500
+      msg 'bank'
+      organizer 'ore'
+      while organizing
+        pause 200
+      endwhile
+    endwhile
+    while not listexists 'MiningNope'
+      if war
+        headmsg 'warmode active, pausing...'
+        while war
+          pause 200
+        endwhile
+      endif
+      autotargettileoffset 1 -1 0
+      usetype 0xf39
+      pause 500
+      while diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 1000
+      endwhile
+      @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+      while @findobject 'enemy' and @inrange 'enemy' 5
+        if diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 100
+        endif
+        cast 'Fireball' 'enemy'
+        pause 200
+      endwhile
+      if @injournal 'no metal here to mine' or @injournal 'mine that'
+        createlist 'MiningNope'
+      elseif @injournal 'Target cannot be seen.' or @injournal 'mine there'
+        createlist 'MiningNope'
+      elseif @injournal 'piece is confiscated'
+        messagebox 'Concession' 'Concession ran out! Script paused until warmode cancelled!'
+        sysmsg 'Concession ran out! Script paused until warmode cancelled!'
+        msg 'bank'
+        warmode 'on'
+        while war
+          pause 100
+          while diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 1000
+          endwhile
+          @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+          while @findobject 'enemy' and @inrange 'enemy' 5
+            if diffhits > 10
+              miniheal 'self'
+              playsound 'warnung.wav'
+              pause 100
+            endif
+            cast 'Fireball' 'enemy'
+            pause 200
+          endwhile
+        endwhile
+      endif
+      clearjournal
+    endwhile
+    removelist 'MiningNope'
+    sysmsg 'vein NORTHEAST empty!' 24
+    clearjournal
+    while diffweight < 100
+      pause 500
+      msg 'bank'
+      organizer 'ore'
+      while organizing
+        pause 200
+      endwhile
+    endwhile
+    while not listexists 'MiningNope'
+      if war
+        headmsg 'warmode active, pausing...'
+        while war
+          pause 200
+        endwhile
+      endif
+      autotargettileoffset 1 0 0
+      usetype 0xf39
+      pause 500
+      while diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 1000
+      endwhile
+      @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+      while @findobject 'enemy' and @inrange 'enemy' 5
+        if diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 100
+        endif
+        cast 'Fireball' 'enemy'
+        pause 200
+      endwhile
+      if @injournal 'no metal here to mine' or @injournal 'mine that'
+        createlist 'MiningNope'
+      elseif @injournal 'Target cannot be seen.' or @injournal 'mine there'
+        createlist 'MiningNope'
+      elseif @injournal 'piece is confiscated'
+        messagebox 'Concession' 'Concession ran out! Script paused until warmode cancelled!'
+        sysmsg 'Concession ran out! Script paused until warmode cancelled!'
+        msg 'bank'
+        warmode 'on'
+        while war
+          pause 100
+          while diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 1000
+          endwhile
+          @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+          while @findobject 'enemy' and @inrange 'enemy' 5
+            if diffhits > 10
+              miniheal 'self'
+              playsound 'warnung.wav'
+              pause 100
+            endif
+            cast 'Fireball' 'enemy'
+            pause 200
+          endwhile
+        endwhile
+      endif
+      clearjournal
+    endwhile
+    removelist 'MiningNope'
+    sysmsg 'vein EAST empty!' 24
+    clearjournal
+    while diffweight < 100
+      pause 500
+      msg 'bank'
+      organizer 'ore'
+      while organizing
+        pause 200
+      endwhile
+    endwhile
+    while not listexists 'MiningNope'
+      if war
+        headmsg 'warmode active, pausing...'
+        while war
+          pause 200
+        endwhile
+      endif
+      autotargettileoffset 1 1 0
+      usetype 0xf39
+      pause 500
+      while diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 1000
+      endwhile
+      @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+      while @findobject 'enemy' and @inrange 'enemy' 5
+        if diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 100
+        endif
+        cast 'Fireball' 'enemy'
+        pause 200
+      endwhile
+      if @injournal 'no metal here to mine' or @injournal 'mine that'
+        createlist 'MiningNope'
+      elseif @injournal 'Target cannot be seen.' or @injournal 'mine there'
+        createlist 'MiningNope'
+      elseif @injournal 'piece is confiscated'
+        messagebox 'Concession' 'Concession ran out! Script paused until warmode cancelled!'
+        sysmsg 'Concession ran out! Script paused until warmode cancelled!'
+        msg 'bank'
+        warmode 'on'
+        while war
+          pause 100
+          while diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 1000
+          endwhile
+          @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+          while @findobject 'enemy' and @inrange 'enemy' 5
+            if diffhits > 10
+              miniheal 'self'
+              playsound 'warnung.wav'
+              pause 100
+            endif
+            cast 'Fireball' 'enemy'
+            pause 200
+          endwhile
+        endwhile
+      endif
+      clearjournal
+    endwhile
+    removelist 'MiningNope'
+    sysmsg 'vein SOUTHEAST empty!' 24
+    clearjournal
+    while diffweight < 100
+      pause 500
+      msg 'bank'
+      organizer 'ore'
+      while organizing
+        pause 200
+      endwhile
+    endwhile
+    while not listexists 'MiningNope'
+      if war
+        headmsg 'warmode active, pausing...'
+        while war
+          pause 200
+        endwhile
+      endif
+      autotargettileoffset 0 1 0
+      usetype 0xf39
+      pause 500
+      while diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 1000
+      endwhile
+      @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+      while @findobject 'enemy' and @inrange 'enemy' 5
+        if diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 100
+        endif
+        cast 'Fireball' 'enemy'
+        pause 200
+      endwhile
+      if @injournal 'no metal here to mine' or @injournal 'mine that'
+        createlist 'MiningNope'
+      elseif @injournal 'Target cannot be seen.' or @injournal 'mine there'
+        createlist 'MiningNope'
+      elseif @injournal 'piece is confiscated'
+        messagebox 'Concession' 'Concession ran out! Script paused until warmode cancelled!'
+        sysmsg 'Concession ran out! Script paused until warmode cancelled!'
+        msg 'bank'
+        warmode 'on'
+        while war
+          pause 100
+          while diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 1000
+          endwhile
+          @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+          while @findobject 'enemy' and @inrange 'enemy' 5
+            if diffhits > 10
+              miniheal 'self'
+              playsound 'warnung.wav'
+              pause 100
+            endif
+            cast 'Fireball' 'enemy'
+            pause 200
+          endwhile
+        endwhile
+      endif
+      clearjournal
+    endwhile
+    removelist 'MiningNope'
+    sysmsg 'vein SOUTH empty!' 24
+    clearjournal
+    while diffweight < 100
+      pause 500
+      msg 'bank'
+      organizer 'ore'
+      while organizing
+        pause 200
+      endwhile
+    endwhile
+    while not listexists 'MiningNope'
+      if war
+        headmsg 'warmode active, pausing...'
+        while war
+          pause 200
+        endwhile
+      endif
+      autotargettileoffset -1 1 0
+      usetype 0xf39
+      pause 500
+      while diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 1000
+      endwhile
+      @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+      while @findobject 'enemy' and @inrange 'enemy' 5
+        if diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 100
+        endif
+        cast 'Fireball' 'enemy'
+        pause 200
+      endwhile
+      if @injournal 'no metal here to mine' or @injournal 'mine that'
+        createlist 'MiningNope'
+      elseif @injournal 'Target cannot be seen.' or @injournal 'mine there'
+        createlist 'MiningNope'
+      elseif @injournal 'piece is confiscated'
+        messagebox 'Concession' 'Concession ran out! Script paused until warmode cancelled!'
+        sysmsg 'Concession ran out! Script paused until warmode cancelled!'
+        msg 'bank'
+        warmode 'on'
+        while war
+          pause 100
+          while diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 1000
+          endwhile
+          @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+          while @findobject 'enemy' and @inrange 'enemy' 5
+            if diffhits > 10
+              miniheal 'self'
+              playsound 'warnung.wav'
+              pause 100
+            endif
+            cast 'Fireball' 'enemy'
+            pause 200
+          endwhile
+        endwhile
+      endif
+      clearjournal
+    endwhile
+    removelist 'MiningNope'
+    sysmsg 'vein SOUTHWEST empty!' 24
+    clearjournal
+    while diffweight < 100
+      pause 500
+      msg 'bank'
+      organizer 'ore'
+      while organizing
+        pause 200
+      endwhile
+    endwhile
+    while not listexists 'MiningNope'
+      if war
+        headmsg 'warmode active, pausing...'
+        while war
+          pause 200
+        endwhile
+      endif
+      autotargettileoffset -1 0 0
+      usetype 0xf39
+      pause 500
+      while diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 1000
+      endwhile
+      @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+      while @findobject 'enemy' and @inrange 'enemy' 5
+        if diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 100
+        endif
+        cast 'Fireball' 'enemy'
+        pause 200
+      endwhile
+      if @injournal 'no metal here to mine' or @injournal 'mine that'
+        createlist 'MiningNope'
+      elseif @injournal 'Target cannot be seen.' or @injournal 'mine there'
+        createlist 'MiningNope'
+      elseif @injournal 'piece is confiscated'
+        messagebox 'Concession' 'Concession ran out! Script paused until warmode cancelled!'
+        sysmsg 'Concession ran out! Script paused until warmode cancelled!'
+        msg 'bank'
+        warmode 'on'
+        while war
+          pause 100
+          while diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 1000
+          endwhile
+          @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+          while @findobject 'enemy' and @inrange 'enemy' 5
+            if diffhits > 10
+              miniheal 'self'
+              playsound 'warnung.wav'
+              pause 100
+            endif
+            cast 'Fireball' 'enemy'
+            pause 200
+          endwhile
+        endwhile
+      endif
+      clearjournal
+    endwhile
+    removelist 'MiningNope'
+    sysmsg 'vein WEST empty!' 24
+    clearjournal
+    while diffweight < 100
+      pause 500
+      msg 'bank'
+      organizer 'ore'
+      while organizing
+        pause 200
+      endwhile
+    endwhile
+    while not listexists 'MiningNope'
+      if war
+        headmsg 'warmode active, pausing...'
+        while war
+          pause 200
+        endwhile
+      endif
+      autotargettileoffset -1 -1 0
+      usetype 0xf39
+      pause 500
+      while diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 1000
+      endwhile
+      @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+      while @findobject 'enemy' and @inrange 'enemy' 5
+        if diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 100
+        endif
+        cast 'Fireball' 'enemy'
+        pause 200
+      endwhile
+      if @injournal 'no metal here to mine' or @injournal 'mine that'
+        createlist 'MiningNope'
+      elseif @injournal 'Target cannot be seen.' or @injournal 'mine there'
+        createlist 'MiningNope'
+      elseif @injournal 'piece is confiscated'
+        messagebox 'Concession' 'Concession ran out! Script paused until warmode cancelled!'
+        sysmsg 'Concession ran out! Script paused until warmode cancelled!'
+        msg 'bank'
+        warmode 'on'
+        while war
+          pause 100
+          while diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 1000
+          endwhile
+          @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+          while @findobject 'enemy' and @inrange 'enemy' 5
+            if diffhits > 10
+              miniheal 'self'
+              playsound 'warnung.wav'
+              pause 100
+            endif
+            cast 'Fireball' 'enemy'
+            pause 200
+          endwhile
+        endwhile
+      endif
+      clearjournal
+    endwhile
+    removelist 'MiningNope'
+    sysmsg 'vein NORTHWEST empty!' 24
+    clearjournal
+    while diffweight < 100
+      pause 500
+      msg 'bank'
+      organizer 'ore'
+      while organizing
+        pause 200
+      endwhile
+    endwhile
+  endfor
+endfor
+// Abhauen
+while mana < 11
+  while not buffexists 'Meditation'
+    while diffhits > 10
+      miniheal 'self'
+      playsound 'warnung.wav'
+      pause 1000
+    endwhile
+    @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+    while @findobject 'enemy' and @inrange 'enemy' 5
+      if diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 100
+      endif
+      cast 'Fireball' 'enemy'
+      pause 200
+    endwhile
+    useskill 'Meditation'
+    pause 200
+  endwhile
+endwhile
+pause 500
+msg 'bank'
+organizer 'ore'
+while organizing
+  pause 200
+endwhile
+pause 5000
+autotargetobject 'Home'
+pause 100
+cast "Recall"
+playsound 'arbeitabgeschlossen.wav'
