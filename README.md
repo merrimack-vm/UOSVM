@@ -8,6 +8,10 @@ tl;dr: Scripting on Vetus Mundus is allowed, but if you gain any kind of resourc
 
 # FAQ
 
+- How do I use those Scripts?
+
+  You need UOSteam installed. In UOSteam you simply copy the Scripts into a new Macro in the Macro tab, then hit Play. Make sure to read the instructions at the beginning of the Scripts.
+
 - A Script asked me for an item and I clicked the wrong one, what do I do?
 
   Go to your UOS Macro Tab, click "Active Objects" and delete the Alias.
