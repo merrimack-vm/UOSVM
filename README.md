@@ -14,7 +14,7 @@ tl;dr:
 Scripting on Vetus Mundus is allowed, but if you gain any kind of resources or items with it, you have to have your eyes on screen while scripting.
 
 
-# Other UOS Libraries:
+# Other UOSteam Libraries:
 
 https://github.com/GitBytes/UOSteam
 
