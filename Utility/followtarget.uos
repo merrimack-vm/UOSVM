@@ -1,0 +1,26 @@
+//More of a tech demo, as following someone is not really one of UOSteams strengths.
+//You're better off holding Alt and left clicking your target.
+//However, you can salvage this script for running to corpses, NPCs or similar things.
+if not @findalias 'runtarget'
+  sysmsg 'Target what to run after!' 34
+  promptalias 'runtarget'
+endif
+while not @inrange 'runtarget' 1
+  if @x 'runtarget' > x 'self' and @y 'runtarget' > y 'self'
+    run 'Southeast'
+  elseif @x 'runtarget' < x 'self' and @y 'runtarget' > y 'self'
+    run 'Southwest'
+  elseif @x 'runtarget' > x 'self' and @y 'runtarget' < y 'self'
+    run 'Northeast'
+  elseif @x 'runtarget' < x 'self' and @y 'runtarget' < y 'self'
+    run 'Northwest'
+  elseif @x 'runtarget' > x 'self' and @y 'runtarget' == y 'self'
+    run 'East'
+  elseif @x 'runtarget' < x 'self' and @y 'runtarget' == y 'self'
+    run 'West'
+  elseif @x 'runtarget' == x 'self' and @y 'runtarget' > y 'self'
+    run 'South'
+  elseif @x 'runtarget' == x 'self' and @y 'runtarget' < y 'self'
+    run 'North'
+  endif
+endwhile
