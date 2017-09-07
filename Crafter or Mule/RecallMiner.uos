@@ -14,8 +14,9 @@
 // script will try to mine all 8 spots around your character, so you won't have to worry about where
 // you mark your runes too much. If you have less than 100 Weight left until weightcap, it will open
 // your bank and start the Organizer 'ore', which you will have to configure yourself.
-// you can do that in UOSteam 'Agenty' -> 'Organizer'. Double click the Organizer entry
+// you can do that in UOSteam 'Agents' -> 'Organizer'. Double click the Organizer entry
 // to rename it to 'ore'. Important! check "Complete" and "Stack" in the Organizer!
+// then add the source (your backpack) and target (something in your bank) as well as the ore graphic.
 // if you want to pause the script, enable warmode. once you disable it, it will continue
 //================================================================//
 // Preparations
