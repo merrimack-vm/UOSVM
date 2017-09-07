@@ -2,6 +2,7 @@
 // Author: Merrimack
 // Made for the Freeshard vetus-mundus.de
 // =========================================================================
+// Only works if your server uses daat99s custom ores, as this Script is configured to only take BODs with the Material "Blaze" or higher.
 // Needs 2 Runebooks, one with a rune to your house set as default and 1 book with runes to BOD NPCs. It doesn't need to be filled with runes, but it slows down the process if it isn't.
 // If you want to ignore crap bods you will need to edit the "Decisionmaking" part.
 // It will go through all the options when you click an NPC, as on Vetus Mundus the position of the BOD option varies.
