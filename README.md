@@ -25,3 +25,5 @@ https://github.com/her/uosteam
 https://github.com/credzba/UOSTeam-Macros
 
 http://forums.zenvera.com/showthread.php?tid=1856
+
+http://uoevolution.com/forum/index.php?topic=7706.0
