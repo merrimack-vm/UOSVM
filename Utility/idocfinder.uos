@@ -3,8 +3,8 @@
 if not listexists 'housesigns'
   createlist 'housesigns'
 endif
-if list 'housesigns' < 56 or list 'housesigns' > 56
-  @clearlist 'housesigns'
+if list 'housesigns' != 56
+  clearlist 'housesigns'
   @pushlist 'housesigns' 0xba4
   @pushlist 'housesigns' 0xba6
   @pushlist 'housesigns' 0xba8
