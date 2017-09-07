@@ -1,0 +1,10 @@
+//Set this Macro to a HotKey and you can honor your nearest target.
+//Hit the Key again and it will honor the second nearest target instead.
+@getenemy 'enemy' 'criminal' 'gray' 'nearest'
+if @hits 'enemy' == maxhits 'enemy'
+  autotargetenemy
+  virtue 'honor'
+  pause 200
+endif
+@attack 'enemy'
+pause 1000
