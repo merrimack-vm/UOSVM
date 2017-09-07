@@ -1,0 +1,42 @@
+// ======================
+// Auto Whirlwind Script
+// Made for Vetus Mundus
+// ======================
+// Cancel Warmode for emergency Stop
+// Will stop when you have Blood Oath Buff
+// Will cast Divine Fury and Consecrate Weapon
+// If needed adjust line 15 to 'primary' or 'secondary'
+while war
+  while buffexists 'Blood Oath'
+    warmode 'off'
+  endwhile
+  warmode 'on'
+  // Set this to Primary if you use a weapon that has Whirlwind as Primary Ability!
+  setability 'secondary'
+  getenemy 'nearest' 'enemy' 'criminal' 'gray'
+  pause 200
+  attack 'enemy'
+  @cleartargetqueue
+  pause 1300
+  if stam <= 120 or not @buffexists 'divine fury'
+    while stam <= 120 or not @buffexists 'divine fury'
+      while mana < 10
+        pause 20
+      endwhile
+      cast "Divine Fury"
+      pause 1100
+    endwhile
+    pause 1700
+  endif
+  if not timerexists 'Consecrate'
+    createtimer 'Consecrate'
+  endif
+  if timer 'Consecrate' >= 8000
+    while mana < 7
+      pause 20
+    endwhile
+    cast "Consecrate Weapon"
+    settimer 'Consecrate' 0
+    pause 2300
+  endif
+endwhile
