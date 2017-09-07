@@ -1,0 +1,36 @@
+//Casts Protection so you're not disrupted
+if not buffexists 'Protection'
+  cast 'Protection'
+  pause 1500
+endif
+while not war
+  while followers <= 4 and mana > 50
+    // Tileoffsets x y z
+    // x Positive East - Negative West
+    // y Positive South - Negative North
+    // z Height - only needed for casting in houses etc.
+    //This line defines where the EV will be summoned:
+    autotargettileoffset -11 -11 0
+    cast "Energy Vortex"
+    pause 2000
+    //As soon as you lost more than 20 hits and have an EV up this will heal you:
+    while diffhits > 20 and followers > 2
+      //And if you are poisoned, it will use Arch Cure:
+      if poisoned 'self'
+        autotargetself
+        cast 'Arch Cure'
+        pause 2000
+      endif
+      bigheal 'self'
+      //This will play a sound called "warnung.wav" in your UOSteam/Sounds folder if you are hurt:
+      playsound 'warnung.wav'
+      pause 1200
+    endwhile
+  endwhile
+  //Keeps you invisible if you already have 4 followers and are unhurt:
+  if not buffexists 'Invisibility'
+    autotargetself
+    cast "Invisibility"
+    pause 2200
+  endif
+endwhile
