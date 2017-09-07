@@ -3,6 +3,7 @@ if not buffexists 'Protection'
   cast 'Protection'
   pause 1500
 endif
+//Only works if you are not in war mode, enable warmode for stopping the script in case of emergency.
 while not war
   while followers <= 4 and mana > 50
     // Tileoffsets x y z
