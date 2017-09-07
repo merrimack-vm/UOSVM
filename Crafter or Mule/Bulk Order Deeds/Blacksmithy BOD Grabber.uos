@@ -1,0 +1,486 @@
+// Version 1.6c standalone
+// Author: Merrimack
+// Made for the Freeshard vetus-mundus.de
+// =========================================================================
+// Only works if your server uses daat99s custom ores, as this Script is configured to only take Exceptional LBODs and LBOD compatible Exceptional SBODs with the Material "Blaze" or higher. Also non-LBOD compatible Platinum SBODs as they can give +3 AOC.
+// Needs 4 Runebooks, one with a rune to your house set as default and 3 books with runes to BOD NPCs. They don't need to be filled with runes, but it slows down the process if they aren't.
+// If you want to ignore crap BODs you will need to edit the "Decisionmaking" part.
+// It will go through all the options when you click an NPC, as on Vetus Mundus the position of the BOD option varies.
+// Don't set to loop.
+// ==========================================================================
+// Attention: Plays "arbeitabgeschlossen.wav" in your UOSteam "Sounds" folder if a proper BOD was found, you have to put such a file in there yourself.
+// If you don't have a .wav file on your computer, go to http://vocaroo.com/ , record yourself sneezing or something, choose "click here to save" and Download it as .wav
+// ==========================================================================
+// Cleanup
+@unsetalias 'bodguy'
+@unsetalias 'npcdone'
+@unsetalias 'npcfakemsg'
+@clearjournal
+// Preparations
+// Runebooks
+if not @findalias 'home'
+  sysmsg 'Target Runebook with rune to your house set as standard' 34
+  promptalias 'home'
+endif
+if not @findalias 'bsbook1'
+  sysmsg 'Target BS Book #1!' 34
+  promptalias 'bsbook1'
+endif
+if not @findalias 'bsbook2'
+  sysmsg 'Target BS Book #2!' 34
+  promptalias 'bsbook2'
+endif
+if not @findalias 'bsbook3'
+  sysmsg 'Target BS Book #3!' 34
+  promptalias 'bsbook3'
+endif
+if not listexists 'bsbook'
+  createlist 'bsbook'
+  pushlist 'bsbook' 'bsbook1'
+  pushlist 'bsbook' 'bsbook2'
+  pushlist 'bsbook' 'bsbook3'
+endif
+if skill 'Magery' > 63
+  headmsg 'Going for Magery Recall'
+  removelist 'Runes'
+  createlist 'Runes'
+  pushlist 'Runes' 50
+  pushlist 'Runes' 51
+  pushlist 'Runes' 52
+  pushlist 'Runes' 53
+  pushlist 'Runes' 54
+  pushlist 'Runes' 55
+  pushlist 'Runes' 56
+  pushlist 'Runes' 57
+  pushlist 'Runes' 58
+  pushlist 'Runes' 59
+  pushlist 'Runes' 60
+  pushlist 'Runes' 61
+  pushlist 'Runes' 62
+  pushlist 'Runes' 63
+  pushlist 'Runes' 64
+  pushlist 'Runes' 65
+elseif skill 'Chivalry' > 60
+  headmsg 'Going for Chivalry Sacred Journey'
+  if tithingpoints < 1000
+    headmsg 'Less than 1000 Tithing Points! Aborting.'
+    stop
+  endif
+  removelist 'Runes'
+  createlist 'Runes'
+  pushlist 'Runes' 75
+  pushlist 'Runes' 76
+  pushlist 'Runes' 77
+  pushlist 'Runes' 78
+  pushlist 'Runes' 79
+  pushlist 'Runes' 80
+  pushlist 'Runes' 81
+  pushlist 'Runes' 82
+  pushlist 'Runes' 83
+  pushlist 'Runes' 84
+  pushlist 'Runes' 85
+  pushlist 'Runes' 86
+  pushlist 'Runes' 87
+  pushlist 'Runes' 88
+  pushlist 'Runes' 89
+  pushlist 'Runes' 90
+else
+  headmsg "You don't have enough Skill (61+/63+). Aborting"
+  stop
+endif
+//End Runebooks
+pause 1000
+for 0 to 'bsbook'
+  for 0 to 'Runes'
+    // Manacheck
+    if mana < 11
+      headmsg 'Mana Low... waiting for 11 mana'
+    endif
+    while mana < 11
+      if skill 'Meditation' > 10
+        useskill 'Meditation'
+        pause 5000
+      endif
+    endwhile
+    // Start Recalling
+    useobject bsbook[]
+    pause 500
+    replygump 'bsbook' Runes[]
+    sysmsg 'Rune (50 means 1, 65 means 16)' 33
+    sysmsg Runes[] 33
+    pause 3000
+    // finding BOD Guy
+    clearignorelist
+    while @findtype 0x190 'any' 'ground'  or @findtype 0x191 'any' 'ground'
+      waitforproperties 'found' 500
+      if @property 'blacksmith' 'found'
+        if not @property 'Guildm' 'found'
+          pause 500
+          @setalias 'bodguy' 'found'
+        endif
+      elseif @property 'weaponsmith' 'found'
+        pause 500
+        @setalias 'bodguy' 'found'
+      endif
+      ignoreobject 'found'
+    endwhile
+    //run to bod guy
+    if not @inrange 'bodguy' 3
+      for 20
+        if @x 'bodguy' > x 'self' and @y 'bodguy' > y 'self'
+          run 'Southeast'
+        elseif @x 'bodguy' < x 'self' and @y 'bodguy' > y 'self'
+          run 'Southwest'
+        elseif @x 'bodguy' > x 'self' and @y 'bodguy' < y 'self'
+          run 'Northeast'
+        elseif @x 'bodguy' < x 'self' and @y 'bodguy' < y 'self'
+          run 'Northwest'
+        elseif @x 'bodguy' > x 'self' and @y 'bodguy' == y 'self'
+          run 'East'
+        elseif @x 'bodguy' < x 'self' and @y 'bodguy' == y 'self'
+          run 'West'
+        elseif @x 'bodguy' == x 'self' and @y 'bodguy' > y 'self'
+          run 'South'
+        elseif @x 'bodguy' == x 'self' and @y 'bodguy' < y 'self'
+          run 'North'
+        endif
+      endfor
+      if not @inrange 'bodguy' 5
+        headmsg 'path blocked! npc too far! continuing with next rune'
+        @setalias 'npcdone' 'self'
+        @unsetalias 'bodguy'
+        pause 500
+      endif
+    endif
+    // actual BOD part
+    while not @findalias 'npcdone'
+      while not @gumpexists 'any' and not @injournal 'may be available'
+        // Click Smith
+        contextmenu 'bodguy' 0
+        if not @gumpexists 'any'
+          pause 100
+          contextmenu 'bodguy' 1
+          if not @gumpexists 'any'
+            pause 100
+            contextmenu 'bodguy' 2
+            if not @gumpexists 'any'
+              pause 100
+              contextmenu 'bodguy' 3
+              //if not @gumpexists 'any'
+              //contextmenu 'bodguy' 4
+              //if not @gumpexists 'any'
+              //contextmenu 'bodguy' 5
+              //endif
+              //endif
+            endif
+          endif
+        endif
+        pause 1000
+      endwhile
+      // Check if NPC sent a fake message
+      while @findalias 'npcfakemsg' and not @gumpexists 'any'
+        @clearjournal
+        pause 100
+        contextmenu 'bodguy' 0
+        if not @gumpexists 'any'
+          pause 100
+          contextmenu 'bodguy' 1
+          if not @gumpexists 'any'
+            pause 100
+            contextmenu 'bodguy' 2
+            if not @gumpexists 'any'
+              pause 100
+              contextmenu 'bodguy' 3
+              //if not @gumpexists 'any'
+              //contextmenu 'bodguy' 4
+              //if not @gumpexists 'any'
+              //contextmenu 'bodguy' 5
+              pause 2000
+              if not @gumpexists 'any'
+                headmsg 'cooldown!'
+                @setalias 'npcdone' 'bodguy'
+                @unsetalias 'npcfakemsg'
+              endif
+              //endif
+              //endif
+            endif
+          endif
+        endif
+        pause 1000
+      endwhile
+      // Decisionmaking
+      while @gumpexists 'any'
+        if not @ingump 'any' 'items must be crafted'
+          headmsg 'regular material'
+          @replygump 'any' close
+        endif
+        if not @ingump 'any' 'exceptional'
+          headmsg 'nonexce'
+          @replygump 'any' close
+        elseif @ingump 'any' 'platinum'
+          headmsg 'plati! cancel window to keep going'
+          playsound 'arbeitabgeschlossen.wav'
+          while @gumpexists 'any'
+            pause 1000
+          endwhile
+          pause 1500
+          if @injournal 'the bulk order deed has been placed in your backpack' 'system'
+            headmsg 'job done!'
+            @clearjournal
+            if mana < 11
+              headmsg 'Mana Low... waiting for 11 mana'
+            endif
+            while mana < 11
+              if skill 'Meditation' > 10
+                useskill 'Meditation'
+                pause 5000
+              endif
+            endwhile
+            @autotargetobject 'home'
+            if skill 'Magery' > 40
+              cast "Recall"
+              pause 2000
+            elseif skill 'Chivalry' > 40
+              cast "Sacred Journey"
+              pause 2000
+            else
+              headmsg "You don't have enough Skill (61+/63+). Aborting."
+              stop
+            endif
+            headmsg 'done'
+            stop
+          endif
+        elseif @ingump 'any' 'shield'
+          headmsg 'non-plati shield'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'buckler'
+          headmsg 'non-plati buckler'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'bascinet'
+          headmsg 'non-plati bascinet'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'norse'
+          headmsg 'norse helmet'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'decorative'
+          headmsg 'non-plati deko kabuto'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'helmet'
+          headmsg 'norse/close/regular helmet'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'hatsuburi'
+          headmsg 'hatsuburi'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'female'
+          headmsg 'female plate'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'electrum'
+          headmsg 'electrum! cancel window to keep going'
+          playsound 'arbeitabgeschlossen.wav'
+          while @gumpexists 'any'
+            pause 1000
+          endwhile
+          pause 1500
+          if @injournal 'the bulk order deed has been placed in your backpack' 'system'
+            headmsg 'job done!'
+            @clearjournal
+            if mana < 11
+              headmsg 'Mana Low... waiting for 11 mana'
+            endif
+            while mana < 11
+              if skill 'Meditation' > 10
+                useskill 'Meditation'
+                pause 5000
+              endif
+            endwhile
+            @autotargetobject 'home'
+            if skill 'Magery' > 40
+              cast "Recall"
+              pause 2000
+            elseif skill 'Chivalry' > 40
+              cast "Sacred Journey"
+              pause 2000
+            else
+              headmsg "You don't have enough Skill (61+/63+). Aborting."
+              stop
+            endif
+            headmsg 'done'
+            stop
+          endif
+        elseif @ingump 'any' 'toxic'
+          headmsg 'toxic! cancel window to keep going'
+          playsound 'arbeitabgeschlossen.wav'
+          while @gumpexists 'any'
+            pause 1000
+          endwhile
+          pause 1500
+          if @injournal 'the bulk order deed has been placed in your backpack' 'system'
+            headmsg 'job done!'
+            @clearjournal
+            if mana < 11
+              headmsg 'Mana Low... waiting for 11 mana'
+            endif
+            while mana < 11
+              if skill 'Meditation' > 10
+                useskill 'Meditation'
+                pause 5000
+              endif
+            endwhile
+            @autotargetobject 'home'
+            if skill 'Magery' > 40
+              cast "Recall"
+              pause 2000
+            elseif skill 'Chivalry' > 40
+              cast "Sacred Journey"
+              pause 2000
+            else
+              headmsg "You don't have enough Skill (61+/63+). Aborting."
+              stop
+            endif
+            headmsg 'done'
+            stop
+          endif
+        elseif @ingump 'any' 'ice'
+          headmsg 'ice! cancel window to keep going'
+          playsound 'arbeitabgeschlossen.wav'
+          while @gumpexists 'any'
+            pause 1000
+          endwhile
+          pause 1500
+          if @injournal 'the bulk order deed has been placed in your backpack' 'system'
+            headmsg 'job done!'
+            @clearjournal
+            if mana < 11
+              headmsg 'Mana Low... waiting for 11 mana'
+            endif
+            while mana < 11
+              if skill 'Meditation' > 10
+                useskill 'Meditation'
+                pause 5000
+              endif
+            endwhile
+            @autotargetobject 'home'
+            if skill 'Magery' > 40
+              cast "Recall"
+              pause 2000
+            elseif skill 'Chivalry' > 40
+              cast "Sacred Journey"
+              pause 2000
+            else
+              headmsg "You don't have enough Skill (61+/63+). Aborting."
+              stop
+            endif
+            headmsg 'done'
+            stop
+          endif
+        elseif @ingump 'any' 'blaze'
+          headmsg 'blaze! cancel window to keep going'
+          playsound 'arbeitabgeschlossen.wav'
+          while @gumpexists 'any'
+            pause 1000
+          endwhile
+          pause 1500
+          if @injournal 'the bulk order deed has been placed in your backpack' 'system'
+            headmsg 'job done!'
+            @clearjournal
+            if mana < 11
+              headmsg 'Mana Low... waiting for 11 mana'
+            endif
+            while mana < 11
+              if skill 'Meditation' > 10
+                useskill 'Meditation'
+                pause 5000
+              endif
+            endwhile
+            @autotargetobject 'home'
+            if skill 'Magery' > 40
+              cast "Recall"
+              pause 2000
+            elseif skill 'Chivalry' > 40
+              cast "Sacred Journey"
+              pause 2000
+            else
+              headmsg "You don't have enough Skill (61+/63+). Aborting."
+              stop
+            endif
+            headmsg 'done'
+            stop
+          endif
+        elseif @ingump 'any' 'valorite'
+          headmsg 'Valorite'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'Verite'
+          headmsg 'Verite'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'Agapite'
+          headmsg 'Agapite'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'Gold'
+          headmsg 'Gold'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'Bronze'
+          headmsg 'Bronze'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'Copper'
+          headmsg 'Copper / Dull Copper'
+          @replygump 'any' close
+          pause 100
+        elseif @ingump 'any' 'Iron'
+          headmsg 'Shadow Iron'
+          @replygump 'any' close
+          pause 100
+        endif
+        @replygump 'any' close
+        pause 1500
+      endwhile
+      pause 1000
+      // Fake message check
+      if @injournal 'may be available in' and not @findalias 'npcdone'
+        headmsg 'cooldown?'
+        @setalias 'npcfakemsg' 'bodguy'
+        @clearjournal
+      endif
+    endwhile
+    @clearjournal
+    @unsetalias 'bodguy'
+    @unsetalias 'npcfakemsg'
+    @unsetalias 'npcdone'
+    pause 1000
+  endfor
+endfor
+headmsg 'not a single BOD was found QQ'
+if mana < 11
+  headmsg 'Mana Low... waiting for 11 mana'
+endif
+while mana < 11
+  if skill 'Meditation' > 10
+    useskill 'Meditation'
+    pause 5000
+  endif
+endwhile
+@autotargetobject 'home'
+if skill 'Magery' > 40
+  cast "Recall"
+  pause 2000
+elseif skill 'Chivalry' > 40
+  cast "Sacred Journey"
+  pause 2000
+else
+  headmsg "You don't have enough Skill (61+/63+). Aborting."
+  stop
+endif
+headmsg 'done'
+stop
