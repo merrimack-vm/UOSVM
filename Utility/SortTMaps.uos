@@ -1,0 +1,23 @@
+//Target Destination Bag
+promptalias 'DestBeutel'
+//
+while findtype 0x14ec 'any' 'Backpack'
+  //
+  //T-Map Levels:
+  // 7: Diabolically
+  // 6: Ingeniously
+  // 5: Deviously
+  // 4: Cleverly
+  // 3: Adeptly
+  // 2: Expertly
+  // 1: Plainly
+  if property 'Ingeniously' 'found'
+    moveitem 'found' 'DestBeutel'
+    ignoreobject 'found'
+    pause 750
+  else
+    ignoreobject 'found'
+    pause 10
+  endif
+endwhile
+clearignorelist
