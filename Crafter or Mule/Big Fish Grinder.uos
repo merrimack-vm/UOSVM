@@ -1,0 +1,63 @@
+// Big Fish Fishing Script
+// Made for Vetus Mundus
+// ================================================
+// Only works on Servers with a bank hive (mobile bank box)
+// You will also need a ship. Preferrably you figure out a route where you don't get blocked.
+// Script will ask you for a bag to store the Big Fishes at. It needs to be in the bank. It also requires an Organizer named "fish".
+// You can create an Organizer in UOSteam under "Agents" -> "Organizer". Make one and double click it to change the name to "fish". Make sure to check "Complete" and "Stack" and add all fishes as well as the desired containers (source being your backpack and target something in your bank)
+// You WILL end up with a full bank, so check your fisher from time to time!
+// Sometimes needs a kick start, just double click your fishing rod and click the sea once. Happens when you get out of range while fishing for example.
+// ================================================
+// Tileoffsets x y z
+// x Positive East - Negative West
+// y Positive South - Negative North
+// z Height - only needed for casting in houses etc.
+autotargettileoffset 3 0 0
+usetype 0xdc0 0 'backpack'
+clearjournal
+pause 500
+warmode 'on'
+while war
+  if not @findalias 'bigfishbag'
+    msg 'bank'
+    promptalias 'bigfishbag'
+  endif
+  if @injournal 'confiscated'
+    headmsg 'Concession!'
+    msg 'bank'
+    clearjournal
+    messagebox 'Concession' 'Ran out'
+    stop
+  endif
+  if @injournal 'biting here'
+    for 0 to 10
+      msg 'one forward'
+      pause 1000
+    endfor
+    pause 2000
+    clearjournal
+    msg 'you'
+    replay
+  elseif @injournal 'you pull'
+    autotargettileoffset 3 0 0
+    usetype 0xdc0 0 'backpack'
+    clearjournal
+    pause 500
+  elseif @injournal 'you fish a'
+    autotargettileoffset 3 0 0
+    usetype 0xdc0 0 'backpack'
+    clearjournal
+    pause 500
+  endif
+  if diffweight < 10
+    msg 'bank'
+    while @findtype 0x9cc 2119 'backpack'
+      moveitem 'found' 'bigfishbag'
+      pause 100
+    endwhile
+    organizer 'fish'
+    while organizing
+      pause 500
+    endwhile
+  endif
+endwhile
