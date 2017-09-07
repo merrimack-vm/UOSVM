@@ -23,3 +23,5 @@ https://github.com/Vlek/UOSteam/tree/master/Scripts
 https://github.com/her/uosteam
 
 https://github.com/credzba/UOSTeam-Macros
+
+http://forums.zenvera.com/showthread.php?tid=1856
