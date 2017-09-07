@@ -1,12 +1,7 @@
 # UOSVM
-UOSteam Script collection, consists of Scripts made for the Freeshard Vetus Mundus.
+UOSteam Script collection, consists of Scripts made for the [Freeshard Vetus Mundus](http://vetus-mundus.de/).
 
-http://vetus-mundus.de/
-
-
-VM Rules:
-
-https://vetus-mundus.de/index.php?article/2-shardrules/
+[VM Rules](https://vetus-mundus.de/index.php?article/2-shardrules/)
 
 
 tl;dr: Scripting on Vetus Mundus is allowed, but if you gain any kind of resources or items with it, you have to have your eyes on screen while scripting.
