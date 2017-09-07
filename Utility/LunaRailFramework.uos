@@ -1,0 +1,120 @@
+//============ Luna Rail Script 1.1 ============\\
+//======You have to write what Skills your=======\\
+//===character should use yourself at line 53!====\\
+//=============== Author: Merrimack ===============\\
+//======= for the freeshard vetus-mundus.de ========\\
+//===================================================\\
+//Preparations
+@createlist 'LunaCoords'
+@clearlist 'LunaCoords'
+@pushlist 'LunaCoords' 950
+@pushlist 'LunaCoords' 545
+@pushlist 'LunaCoords' 1029
+@pushlist 'LunaCoords' 495
+@removetimer 'wartezeit'
+//Character Position correct?
+if x 'self' < 1020 or x 'self' > 1030
+  headmsg 'Wrong Position!' 45
+  sysmsg 'Please enter the northeastern tower of the inner walls of luna, usually there is an Animal Taming NPC in it.'
+  stop
+elseif y 'self' < 493 or y 'self' > 500
+  headmsg 'Wrong Position!' 45
+  sysmsg 'Please enter the northeastern tower of the inner walls of luna, usually there is an Animal Taming NPC in it.'
+  stop
+elseif z 'self' < -33
+  headmsg 'You are in the wrong floor! Please walk up both stairs.' 45
+  stop
+endif
+//Go to exact starting position
+while x 'self' != LunaCoords[2]
+  if x 'self' < LunaCoords[2]
+    run 'east'
+    pause 100
+  elseif x 'self' > LunaCoords[2]
+    run 'west'
+    pause 100
+  endif
+endwhile
+while y 'self' != LunaCoords[3]
+  if y 'self' < LunaCoords[3]
+    run 'south'
+    pause 100
+  elseif y 'self' > LunaCoords[3]
+    run 'north'
+    pause 100
+  endif
+endwhile
+headmsg 'Correct Position reached.' 75
+//Script Start
+while list 'LunaCoords' > 0
+  if timerexists 'wartezeit'
+    //Skillpart
+    while timer 'wartezeit' < 10000
+      //Here you can enter whatever you want to skill, inbetween while and endwhile.
+    endwhile
+    removetimer 'wartezeit'
+  else
+    //Follow Northern Wall to the West
+    if list 'LunaCoords' == 4
+      if x 'self' > LunaCoords[0]
+        for 0 to 10
+          run 'west'
+          pause 200
+        endfor
+        createtimer 'wartezeit'
+        settimer 'wartezeit' 0
+      elseif x 'self' < LunaCoords[0]
+        while x 'self' < LunaCoords[0]
+          run 'east'
+          pause 500
+        endwhile
+      elseif x 'self' == LunaCoords[0]
+        poplist 'LunaCoords' 'front'
+      endif
+      //Follow Western Wall to the South
+    elseif list 'LunaCoords' == 3
+      if y 'self' < LunaCoords[0]
+        for 0 to 10
+          run 'south'
+          pause 200
+        endfor
+        createtimer 'wartezeit'
+        settimer 'wartezeit' 0
+      elseif y 'self' == LunaCoords[0]
+        poplist 'LunaCoords' 'front'
+      endif
+      //Follow Southern Wall to the East
+    elseif list 'LunaCoords' == 2
+      if x 'self' < LunaCoords[0]
+        for 0 to 10
+          run 'east'
+          pause 200
+        endfor
+        createtimer 'wartezeit'
+        settimer 'wartezeit' 0
+      elseif x 'self' > LunaCoords[0]
+        run 'west'
+        pause 500
+      elseif x 'self' == LunaCoords[0]
+        poplist 'LunaCoords' 'front'
+      endif
+      //Follow Eastern Wall to the North
+    elseif list 'LunaCoords' == 1
+      if y 'self' > LunaCoords[0]
+        for 0 to 10
+          run 'north'
+          pause 200
+        endfor
+        createtimer 'wartezeit'
+        settimer 'wartezeit' 0
+      elseif y 'self' < LunaCoords[0]
+        while y 'self' < LunaCoords[0]
+          run 'south'
+          pause 200
+        endwhile
+      elseif y 'self' == LunaCoords[0]
+        poplist 'LunaCoords' 'front'
+      endif
+    endif
+  endif
+endwhile
