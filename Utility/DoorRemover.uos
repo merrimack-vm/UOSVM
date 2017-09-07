@@ -1,0 +1,14 @@
+//Will open Toku Citadel, Minax and BT Castle Doors.
+//Activating Warmode will cancel the Script.
+//Keep it on Loop.
+while not war
+  while @findtype 0x67f 'any' 'ground' 1 2
+    useobject! 'found'
+  endwhile
+  while @findtype 0x67b 'any' 'ground' 1 2
+    useobject! 'found'
+  endwhile
+  while @findtype 0x69f 'any' 'ground' 1 2
+    useobject! 'found'
+  endwhile
+endwhile
