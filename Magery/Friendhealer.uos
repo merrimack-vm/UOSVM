@@ -1,0 +1,40 @@
+//////////////////////////////////////
+///// Vetus Mundus Friend Healer /////
+//////////// Version 1.0d ////////////
+/////// Scripted by Merrimack ////////
+//////////////////////////////////////
+//Warning: Highly Experimental.
+//Enable Warmode to stop the Script in case of emergency.
+while not war
+  if not listexists 'friendlies'
+    createlist 'friendlies'
+  endif
+  if not @inlist 'friendlies' 'self'
+    pushlist 'friendlies' 'self'
+  endif
+  if @getfriend 'friend' 'nearest' and @findobject 'friend' 'any' 'any' 'any' 10
+    if not @inlist 'friendlies' 'friend'
+      pushlist 'friendlies' 'friend'
+    endif
+  endif
+  for 0 to 'friendlies'
+    if not dead friendlies[]
+      while @diffhits friendlies[] > 50 and @inrange friendlies[] 10
+        while poisoned friendlies[]
+          cast 'Arch Cure' friendlies[]
+        endwhile
+        bigheal friendlies[]
+      endwhile
+    endif
+  endfor
+  for 0 to 'friendlies'
+    if not dead friendlies[]
+      if @diffhits friendlies[] != 0 and @inrange friendlies[] 10
+        while poisoned friendlies[]
+          cast 'Arch Cure' friendlies[]
+        endwhile
+        bigheal friendlies[]
+      endif
+    endif
+  endfor
+endwhile
