@@ -1,0 +1,28 @@
+// Merrimack's Cotton/Wool Collecter
+// Have a Knife in your backpack and just run past sheep or cotton plants without making your hands dirty.
+if not listexists 'cotton'
+  @createlist 'cotton'
+endif
+if list 'cotton' != 4
+  @clearlist 'cotton'
+  @pushlist 'cotton' 0xc51
+  @pushlist 'cotton' 0xc52
+  @pushlist 'cotton' 0xc53
+  @pushlist 'cotton' 0xc54
+endif
+while diffweight > 10
+  if @findtype 0xcf 0 'ground' 'any' 2
+    usetype 0xf52 0 'backpack'
+    target! 'found'
+    pause 100
+  endif
+  for 0 to 'cotton'
+    if @findtype cotton[] 0 'ground' 'any' 2
+      useobject 'found'
+      pause 100
+    elseif @findtype 0xdf9 0 'ground' 'any' 2
+      moveitem 'found' 'backpack'
+    endif
+  endfor
+endwhile
+headmsg 'too much weight'
