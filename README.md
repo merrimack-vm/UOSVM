@@ -9,9 +9,7 @@ VM Rules:
 https://vetus-mundus.de/index.php?article/2-shardrules/
 
 
-tl;dr:
-
-Scripting on Vetus Mundus is allowed, but if you gain any kind of resources or items with it, you have to have your eyes on screen while scripting.
+tl;dr: Scripting on Vetus Mundus is allowed, but if you gain any kind of resources or items with it, you have to have your eyes on screen while scripting.
 
 # FAQ
 
