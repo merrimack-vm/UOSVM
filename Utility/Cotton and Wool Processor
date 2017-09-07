@@ -1,0 +1,31 @@
+// Merrimack's Cotton/Wool Processor
+// If you have Cotton or Wool in your backpack, run up to a spinning wheel.
+// Wait until it's done and proceed to a loom.
+// Tested at New Haven and Luna Tailor.
+while @findtype 0xdf9 0 'backpack' or @findtype 0xdf8 0 'backpack'
+  useobject 'found'
+  targetground 0x1015 0 2
+  pause 2000
+  if diffweight < 5
+    headmsg 'too heavy! activate warmode for emergency stop!'
+  endif
+  while war
+    pause 1000
+  endwhile
+endwhile
+headmsg 'proceed to a loom now'
+while not @findtype 0x1062 'any' 'ground' 'any' 2
+  pause 200
+endwhile
+while @findtype 0xfa0 0 'backpack' or @findtype 0xe1d 0 'backpack'
+  useobject 'found'
+  targetground 0x1062 0 2
+  pause 100
+  if diffweight < 5
+    headmsg 'too heavy! activate warmode for emergency stop!'
+  endif
+  while war
+    pause 1000
+  endwhile
+endwhile
+headmsg 'all done'
