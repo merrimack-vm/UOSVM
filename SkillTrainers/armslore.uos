@@ -1,4 +1,4 @@
-//Step 1: Put a load of Daggers into a bag
+//Step 1: Put a load of Daggers into a bag, set Macro to Loop
 //Step 2: Run Script and mark your bag as "armslorebag"
 //Step 3: Lean Back.
 if not @findalias 'armslorebag'
@@ -6,8 +6,8 @@ if not @findalias 'armslorebag'
 endif
 while findtype 0xf52 'any' 'armslorebag'
   for 0 to 10
+    autotargetobject 'found'
     useskill 'Arms Lore'
-    target! 'found'
     pause 5000
   endfor
   ignoreobject 'found'
