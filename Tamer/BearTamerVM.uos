@@ -65,7 +65,7 @@ for 0 to 'Runes'
   //Für jeden Bärenlisteneintrag...
   for 0 to 'Bears'
     //...sucht er die Grafik vom aktuellen Eintrag in der Bärenliste
-    while @findtype Bears[] 0 'ground'
+    while @findtype Bears[] 'any' 'ground'
       //und markiert diesen
       headmsg '×' 32 'found'
       //Während nur ein Follower (= nix getamed)
