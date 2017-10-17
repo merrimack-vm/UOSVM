@@ -1,5 +1,5 @@
-//Too lazy to translate everything, but basically it lets you pick a runebook with spots for bears, recalls through them,
-//follows, tames and shrinks them with a pet leash (line 117) 
+//Too lazy to translate everything, but basically it lets you mark a runebook with spots for bears, recalls through them,
+//follows, tames and shrinks them with a pet leash (line 114)
 //Alias für Runenbuch mit Bärenspots setzen
 if not @findalias 'BearRuneBook'
   promptalias 'BearRuneBook'
@@ -9,13 +9,11 @@ if not listexists 'Bears'
   @createlist 'Bears'
 endif
 //Inhalte der Bärenliste überprüfen
-//Wenn ihr Grafiken hinzufügt auch die != Nummer anpassen
-if list 'Bears' != 4
+//Wenn ihr welche hinzufügt auch die != nummer anpassen
+if list 'Bears' != 2
   clearlist 'Bears'
   pushlist 'Bears' 0xd5 //Polar
   pushlist 'Bears' 0xa7 //Brown
-  pushlist 'Bears' 0xd3 //Black
-  pushlist 'Bears' 0xd4 //Grizzly
 endif
 //Liste mit Positionen der Runebook Recall Gumps
 if not listexists 'Runes'
@@ -44,26 +42,26 @@ endif
 //Script Start:
 //Für jeden Runenlisteneintrag...
 for 0 to 'Runes'
+  //Manacheck
+  while mana < 11
+    while not buffexists 'Meditation'
+      //Heilt sich wenn HP verloren
+      while diffhits > 10
+        miniheal 'self'
+        pause 1000
+      endwhile
+      //Meditation
+      useskill 'Meditation'
+    endwhile
+  endwhile
+  //...recalled zum aktuellen Eintrag in der Runenliste
+  useobject 'BearRuneBook'
+  pause 100
+  waitforgump 0x59 15000
+  replygump 0x59 Runes[]
+  pause 2500
   //Für jeden Bärenlisteneintrag...
   for 0 to 'Bears'
-    //Manacheck
-    while mana < 11
-      if not buffexists 'Meditation'
-        //Heilt sich wenn HP verloren
-        while diffhits > 10
-          miniheal 'self'
-          pause 1000
-        endwhile
-        //Meditation
-        useskill 'Meditation'
-      endif
-    endwhile
-    //...recalled zum aktuellen Eintrag in der Runenliste
-    useobject 'BearRuneBook'
-    pause 100
-    waitforgump 0x59 15000
-    replygump 0x59 Runes[]
-    pause 2500
     //...sucht er die Grafik vom aktuellen Eintrag in der Bärenliste
     while @findtype Bears[] 0 'ground'
       //und markiert diesen
@@ -110,15 +108,12 @@ for 0 to 'Runes'
           @clearjournal
         endif
       endwhile
-      while 'followers' > 1
-        //Hier landet man erst wenn man 2 Follower oder mehr hat
-        headmsg 'taming complete'
-        //Petleash nutzen und journal clearen - dann von vorn.
-        usetype 0x1374 'any' 'backpack'
-        pause 1000
-        target! 'found'
-        clearjournal
-      endwhile
+      //Hier landet man erst wenn man 2 Follower oder mehr hat
+      headmsg 'taming complete'
+      //Petleash nutzen und journal clearen - dann von vorn.
+      usetype 0x1374 'any' 'backpack'
+      target! 'found'
+      clearjournal
     endwhile
   endfor
 endfor
