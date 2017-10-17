@@ -48,7 +48,7 @@ for 0 to 'Runes'
   for 0 to 'Bears'
     //Manacheck
     while mana < 11
-      while not buffexists 'Meditation'
+      if not buffexists 'Meditation'
         //Heilt sich wenn HP verloren
         while diffhits > 10
           miniheal 'self'
@@ -56,7 +56,7 @@ for 0 to 'Runes'
         endwhile
         //Meditation
         useskill 'Meditation'
-      endwhile
+      endif
     endwhile
     //...recalled zum aktuellen Eintrag in der Runenliste
     useobject 'BearRuneBook'
