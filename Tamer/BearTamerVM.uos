@@ -1,0 +1,118 @@
+//Too lazy to translate everything, but basically it lets you mark a runebook with spots for bears, recalls through them, follows and tames them, shrinks them with a pet leash (line 114) and then continues again
+//Alias für Runenbuch mit Bärenspots setzen
+if not @findalias 'BearRuneBook'
+  promptalias 'BearRuneBook'
+endif
+//Bärenliste erstellen
+if not listexists 'Bears'
+  @createlist 'Bears'
+endif
+//Inhalte der Bärenliste überprüfen
+//Wenn ihr welche hinzufügt auch die != nummer anpassen
+if list 'Bears' != 2
+  clearlist 'Bears'
+  pushlist 'Bears' 0xd5 //Polar
+  pushlist 'Bears' 0xa7 //Brown
+endif
+//Liste mit Positionen der Runebook Recall Gumps
+if not listexists 'Runes'
+  @createlist 'Runes'
+endif
+//Überprüfung des Inhalts
+if list 'Runes' != 16
+  @clearlist 'Runes'
+  pushlist 'Runes' 50
+  pushlist 'Runes' 51
+  pushlist 'Runes' 52
+  pushlist 'Runes' 53
+  pushlist 'Runes' 54
+  pushlist 'Runes' 55
+  pushlist 'Runes' 56
+  pushlist 'Runes' 57
+  pushlist 'Runes' 58
+  pushlist 'Runes' 59
+  pushlist 'Runes' 60
+  pushlist 'Runes' 61
+  pushlist 'Runes' 62
+  pushlist 'Runes' 63
+  pushlist 'Runes' 64
+  pushlist 'Runes' 65
+endif
+//Script Start:
+//Für jeden Runenlisteneintrag...
+for 0 to 'Runes'
+  //Für jeden Bärenlisteneintrag...
+  for 0 to 'Bears'
+    //Manacheck
+    while mana < 11
+      while not buffexists 'Meditation'
+        //Heilt sich wenn HP verloren
+        while diffhits > 10
+          miniheal 'self'
+          pause 1000
+        endwhile
+        //Meditation
+        useskill 'Meditation'
+      endwhile
+    endwhile
+    //...recalled zum aktuellen Eintrag in der Runenliste
+    useobject 'BearRuneBook'
+    pause 100
+    waitforgump 0x59 15000
+    replygump 0x59 Runes[]
+    pause 2500
+    //...sucht er die Grafik vom aktuellen Eintrag in der Bärenliste
+    while @findtype Bears[] 0 'ground'
+      //und markiert diesen
+      headmsg '×' 32 'found'
+      //Während nur ein Follower (= nix getamed)
+      while followers < 2
+        //Nachrennen wenn weiter als 2 tiles weg
+        while not @inrange 'found' 2
+          if x 'self' < x 'found'
+            for 0 to 2
+              run 'East'
+              pause 100
+            endfor
+          endif
+          if x 'self' > x 'found'
+            for 0 to 2
+              run 'West'
+              pause 100
+            endfor
+          endif
+          if y 'self' < y 'found'
+            for 0 to 2
+              run 'South'
+              pause 100
+            endfor
+          endif
+          if y 'self' > y 'found'
+            for 0 to 2
+              run 'North'
+              pause 100
+            endfor
+          endif
+          //Wenn man im Warmode ist pausiert er (für Notfälle)
+          while war
+            pause 1000
+          endwhile
+        endwhile
+        //Wenn er im Journal kein "begin taming" findet tamed er
+        if not @injournal 'begin taming'
+          useskill 'Animal Taming'
+          target! 'found'
+          //Wenn er failed löscht ers Journal
+        elseif @injournal 'fail taming'
+          @clearjournal
+        endif
+      endwhile
+      //Hier landet man erst wenn man 2 Follower oder mehr hat
+      headmsg 'taming complete'
+      //Petleash nutzen und journal clearen - dann von vorn.
+      usetype 0x1374 'any' 'backpack'
+      target! 'found'
+      clearjournal
+    endwhile
+  endfor
+endfor
