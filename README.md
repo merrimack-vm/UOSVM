@@ -16,7 +16,7 @@ tl;dr: Scripting on Vetus Mundus is allowed, but if you gain any kind of resourc
 
   Go to your UOS Macro Tab, click "Active Objects" and delete the Alias.
 
-- A Script say I am missing a .wav Soundfile, what's up with that?
+- A Script says I am missing a .wav Soundfile, what's up with that?
 
   Some Scripts include warnings if you are getting attacked, for example. You will need to put .wav files with the correct name into your UOSteam/Sounds folder, so they can be played properly. If it still does not work, make sure it is a proper .wav file and not a different soundfile, that was renamed to .wav .
 
