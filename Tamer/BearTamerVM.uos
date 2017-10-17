@@ -1,4 +1,4 @@
-//Too lazy to translate everything, but basically it lets you mark a runebook with spots for bears, recalls through them,
+//Too lazy to translate everything, but basically it lets you pick a runebook with spots for bears, recalls through them,
 //follows, tames and shrinks them with a pet leash (line 123)
 //Alias für Runenbuch mit Bärenspots setzen
 if not @findalias 'BearRuneBook'
@@ -9,11 +9,13 @@ if not listexists 'Bears'
   @createlist 'Bears'
 endif
 //Inhalte der Bärenliste überprüfen
-//Wenn ihr welche hinzufügt auch die != nummer anpassen
-if list 'Bears' != 2
+//Wenn ihr Grafiken hinzufügt auch die != Nummer anpassen
+if list 'Bears' != 4
   clearlist 'Bears'
   pushlist 'Bears' 0xd5 //Polar
   pushlist 'Bears' 0xa7 //Brown
+  pushlist 'Bears' 0xd3 //Black
+  pushlist 'Bears' 0xd4 //Grizzly
 endif
 //Liste mit Positionen der Runebook Recall Gumps
 if not listexists 'Runes'
@@ -44,7 +46,7 @@ endif
 for 0 to 'Runes'
   //Manacheck
   while mana < 11
-    while not buffexists 'Meditation'
+    if not buffexists 'Meditation'
       //Heilt sich wenn HP verloren
       while diffhits > 10
         miniheal 'self'
@@ -52,7 +54,7 @@ for 0 to 'Runes'
       endwhile
       //Meditation
       useskill 'Meditation'
-    endwhile
+    endif
   endwhile
   //...recalled zum aktuellen Eintrag in der Runenliste
   useobject 'BearRuneBook'
@@ -117,12 +119,15 @@ for 0 to 'Runes'
           pause 1000
         endif
       endwhile
-      //Hier landet man erst wenn man 2 Follower oder mehr hat
-      headmsg 'taming complete'
-      //Petleash nutzen und journal clearen - dann von vorn.
-      usetype 0x1374 'any' 'backpack'
-      target! 'found'
-      clearjournal
+      while 'followers' > 1
+        //Hier landet man erst wenn man 2 Follower oder mehr hat
+        headmsg 'taming complete'
+        //Petleash nutzen und journal clearen - dann von vorn.
+        usetype 0x1374 'any' 'backpack'
+        pause 1000
+        target! 'found'
+        clearjournal
+      endwhile
     endwhile
   endfor
 endfor
