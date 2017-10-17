@@ -1,4 +1,5 @@
-//Too lazy to translate everything, but basically it lets you mark a runebook with spots for bears, recalls through them, follows and tames them, shrinks them with a pet leash (line 114) and then continues again
+//Too lazy to translate everything, but basically it lets you mark a runebook with spots for bears, recalls through them,
+//follows, tames and shrinks them with a pet leash (line 114) 
 //Alias für Runenbuch mit Bärenspots setzen
 if not @findalias 'BearRuneBook'
   promptalias 'BearRuneBook'
