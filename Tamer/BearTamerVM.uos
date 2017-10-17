@@ -1,5 +1,5 @@
 //Too lazy to translate everything, but basically it lets you pick a runebook with spots for bears, recalls through them,
-//follows, tames and shrinks them with a pet leash (line 126)
+//follows, tames and shrinks them with a pet leash (line 126). Activate Warmode to Pause Script.
 //Alias für Runenbuch mit Bärenspots setzen
 if not @findalias 'BearRuneBook'
   promptalias 'BearRuneBook'
@@ -97,9 +97,17 @@ for 0 to 'Runes'
             endfor
           endif
           //Wenn man im Warmode ist pausiert er (für Notfälle)
-          while war
-            pause 1000
-          endwhile
+          if war
+            headmsg 'Warmode Aktiv, Pausiere!'
+            while war
+              pause 1000
+              //Heilt sich wenn HP verloren
+              if diffhits > 10
+                miniheal 'self'
+                pause 1000
+              endif
+            endwhile
+          endif
           //Heilt sich wenn HP verloren
           if diffhits > 10
             miniheal 'self'
@@ -117,6 +125,17 @@ for 0 to 'Runes'
         elseif diffhits > 10
           miniheal 'self'
           pause 1000
+        endif
+        if war
+          headmsg 'Warmode Aktiv, Pausiere!'
+          while war
+            pause 1000
+            //Heilt sich wenn HP verloren
+            if diffhits > 10
+              miniheal 'self'
+              pause 1000
+            endif
+          endwhile
         endif
       endwhile
       while 'followers' > 1
