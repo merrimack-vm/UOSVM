@@ -36,4 +36,4 @@ tl;dr: Scripting on Vetus Mundus is allowed, but if you gain any kind of resourc
 
 - http://uoevolution.com/forum/index.php?topic=7706.0
 
-- http://www.scriptuo.com/index.php?PHPSESSID=892a0fea2e50487c7a62be31506fdc30&board=151.0
+- http://www.scriptuo.com/index.php?board=151.0
