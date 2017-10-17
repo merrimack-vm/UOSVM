@@ -1,5 +1,5 @@
 //Too lazy to translate everything, but basically it lets you pick a runebook with spots for bears, recalls through them,
-//follows, tames and shrinks them with a pet leash (line 116) 
+//follows, tames and shrinks them with a pet leash (line 117) 
 //Alias für Runenbuch mit Bärenspots setzen
 if not @findalias 'BearRuneBook'
   promptalias 'BearRuneBook'
@@ -110,12 +110,15 @@ for 0 to 'Runes'
           @clearjournal
         endif
       endwhile
-      //Hier landet man erst wenn man 2 Follower oder mehr hat
-      headmsg 'taming complete'
-      //Petleash nutzen und journal clearen - dann von vorn.
-      usetype 0x1374 'any' 'backpack'
-      target! 'found'
-      clearjournal
+      while 'followers' > 1
+        //Hier landet man erst wenn man 2 Follower oder mehr hat
+        headmsg 'taming complete'
+        //Petleash nutzen und journal clearen - dann von vorn.
+        usetype 0x1374 'any' 'backpack'
+        pause 1000
+        target! 'found'
+        clearjournal
+      endwhile
     endwhile
   endfor
 endfor
