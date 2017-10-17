@@ -1,5 +1,5 @@
 //Too lazy to translate everything, but basically it lets you mark a runebook with spots for bears, recalls through them,
-//follows, tames and shrinks them with a pet leash (line 114) 
+//follows, tames and shrinks them with a pet leash (line 116) 
 //Alias für Runenbuch mit Bärenspots setzen
 if not @findalias 'BearRuneBook'
   promptalias 'BearRuneBook'
@@ -9,11 +9,13 @@ if not listexists 'Bears'
   @createlist 'Bears'
 endif
 //Inhalte der Bärenliste überprüfen
-//Wenn ihr welche hinzufügt auch die != nummer anpassen
-if list 'Bears' != 2
+//Wenn ihr Grafiken hinzufügt auch die != Nummer anpassen
+if list 'Bears' != 4
   clearlist 'Bears'
   pushlist 'Bears' 0xd5 //Polar
   pushlist 'Bears' 0xa7 //Brown
+  pushlist 'Bears' 0xd3 //Black
+  pushlist 'Bears' 0xd4 //Grizzly
 endif
 //Liste mit Positionen der Runebook Recall Gumps
 if not listexists 'Runes'
