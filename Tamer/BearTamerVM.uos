@@ -1,5 +1,5 @@
 //Too lazy to translate everything, but basically it lets you mark a runebook with spots for bears, recalls through them,
-//follows, tames and shrinks them with a pet leash (line 114)
+//follows, tames and shrinks them with a pet leash (line 123)
 //Alias für Runenbuch mit Bärenspots setzen
 if not @findalias 'BearRuneBook'
   promptalias 'BearRuneBook'
@@ -98,6 +98,11 @@ for 0 to 'Runes'
           while war
             pause 1000
           endwhile
+          //Heilt sich wenn HP verloren
+          if diffhits > 10
+            miniheal 'self'
+            pause 1000
+          endif
         endwhile
         //Wenn er im Journal kein "begin taming" findet tamed er
         if not @injournal 'begin taming'
@@ -106,6 +111,10 @@ for 0 to 'Runes'
           //Wenn er failed löscht ers Journal
         elseif @injournal 'fail taming'
           @clearjournal
+          //Heilt sich wenn HP verloren
+        elseif diffhits > 10
+          miniheal 'self'
+          pause 1000
         endif
       endwhile
       //Hier landet man erst wenn man 2 Follower oder mehr hat
