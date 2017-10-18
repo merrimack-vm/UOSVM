@@ -1,6 +1,7 @@
-//Animal Taming Recall Script
-//Shrinks Animals with a Petleash for BODDing purposes
+//Animal Taming Recall Script 1.1
+//Shrinks Animals with a Petleash for BODing purposes
 //Stores them in the Bank using a Bank Hive once you are full
+//Warmode for emergency pause and write "skip" to skip current animal
 //Author: Merrimack
 //======================================================
 //Set alias for Runebook with spots to tame animals
@@ -36,7 +37,7 @@ if list 'Runes' == 0
 endif
 //While there are Runes in your Runes List
 while list 'Runes' != 0
-  //Checks if the Bears list is complete... if you want to add more, don't forget to change the != value to the amount of entries and do the same in the lists below, the last list contains graphics of shrunk pets!
+  //Checks if the Bears list is complete... if you want to add more, don't forget to change the != value to the amount of entries and do the same in the lists below
   if list 'Animals' != 8
     @clearlist 'Animals'
     @pushlist 'Animals' 0xd5 //Polar
@@ -47,6 +48,37 @@ while list 'Runes' != 0
     @pushlist 'Animals' 0xd6 //Panther
     @pushlist 'Animals' 0xea //GHart
     @pushlist 'Animals' 0xed //Hind
+  endif
+  //If you have a bank hive it will create a list of SHRUNK animal graphics
+  if @findtype 0x91a 1161 'backpack'
+    if not @listexists 'ShrunkAnimal'
+      @createlist 'ShrunkAnimal'
+    endif
+    //And fill it
+    if list 'ShrunkAnimal' != 6
+      @clearlist 'ShrunkAnimal'
+      @pushlist 'ShrunkAnimal' 0x20e1 //Polar Bear
+      @pushlist 'ShrunkAnimal' 0x2118 //Brown + Black Bear
+      @pushlist 'ShrunkAnimal' 0x211e //Grizzly Bear
+      @pushlist 'ShrunkAnimal' 0x2583 //Cougar
+      @pushlist 'ShrunkAnimal' 0x25b5 //Panther
+      @pushlist 'ShrunkAnimal' 0x20d4 //Hind + Great Hart
+    endif
+  endif
+  //Weightcheck
+  if diffweight < 30 and @findtype 0x91a 'any' 'backpack'
+    msg 'bank'
+    pause 1000
+    for 0 to 'ShrunkAnimal'
+      while @findtype ShrunkAnimal[] 'any' 'backpack'
+        moveitem 'found' 'bank'
+        pause 100
+      endwhile
+    endfor
+    //If not it will stop
+  elseif not @findtype 0x91a 'any' 'backpack'
+    headmsg 'No Bankhive found and you are full! Stopping Script.'
+    stop
   endif
   //Manacheck
   while mana < 11
@@ -71,8 +103,8 @@ while list 'Runes' != 0
       //Otherwhise it marks it and runs towards it
     else
       headmsg '×' 32 'found'
-      while followers < 2
-        while not @inrange 'found' 2
+      while followers < 2 and not @findalias 'skipped'
+        while not @inrange 'found' 2 and not @findalias 'skipped'
           if x 'self' < x 'found'
             for 0 to 2
               run 'East'
@@ -102,6 +134,13 @@ while list 'Runes' != 0
             headmsg 'Warmode Aktiv, Pausiere!'
             while war
               pause 1000
+              //If you say "skip" it will skip the current target!
+              if @injournal 'skip'
+                headmsg 'Skipping this animal!' 32 'found'
+                ignoreobject 'found'
+                @clearjournal
+                @setalias 'skipped' 'self'
+              endif
             endwhile
           endif
           //Will heal if your character lost more than 10 hits.
@@ -109,31 +148,41 @@ while list 'Runes' != 0
             miniheal 'self'
             pause 1000
           endif
-        endwhile
-        //Taming starts here
-        if not @injournal 'start to tame'
-          useskill 'Animal Taming'
-          target! 'found'
-        elseif @injournal 'fail'
-          @clearjournal
-        elseif @injournal 'to continue taming'
-          @clearjournal
-        elseif diffhits > 10
-          miniheal 'self'
-          pause 1000
-        endif
-        //Again, warmode for emergency pause
-        if war
-          headmsg 'Warmode Aktiv, Pausiere!'
-          while war
+          //If you say "skip" it will skip the current target!
+          if @injournal 'skip'
+            headmsg 'Skipping this animal!' 32 'found'
+            ignoreobject 'found'
+            @clearjournal
+            @setalias 'skipped' 'self'
+          endif
+          //Taming starts here
+          if not @injournal 'start to tame' and @inrange 'found' 2
+            useskill 'Animal Taming'
+            pause 100
+            target! 'found'
+          elseif @injournal 'fail'
+            @clearjournal
+          elseif @injournal 'to continue taming'
+            @clearjournal
+          elseif diffhits > 10
+            miniheal 'self'
             pause 1000
-            if diffhits > 10
-              miniheal 'self'
+          endif
+          //Again, warmode for emergency pause
+          if war
+            headmsg 'Warmode Aktiv, Pausiere!'
+            while war
               pause 1000
-            endif
-          endwhile
-        endif
+              if diffhits > 10
+                miniheal 'self'
+                pause 1000
+              endif
+            endwhile
+          endif
+        endwhile
       endwhile
+      //Skipping stuff
+      @unsetalias 'skipped'
       //If you have more than one follower it assumes your taming succeeded and will shrink the pet
       while 'followers' > 1
         headmsg 'taming complete'
@@ -153,38 +202,22 @@ while list 'Runes' != 0
           @pushlist 'Animals' 0xea //GHart
           @pushlist 'Animals' 0xed //Hind
         endif
-        //Checks if you are close to the weight cap.
-        if diffweight < 30
-          //If you have a bank hive it will move your shrunk pets in there
-          if @findtype 0x91a 'any' 'backpack'
-            if not @listexists 'ShrunkAnimal'
-              @createlist 'ShrunkAnimal'
-            endif
-            //List of shrunk pet graphics
-            if list 'ShrunkAnimal' != 6
-              @clearlist 'ShrunkAnimal'
-              @pushlist 'ShrunkAnimal' 0x20e1 //Polar Bear
-              @pushlist 'ShrunkAnimal' 0x2118 //Brown + Black Bear
-              @pushlist 'ShrunkAnimal' 0x211e //Grizzly Bear
-              @pushlist 'ShrunkAnimal' 0x2583 //Cougar
-              @pushlist 'ShrunkAnimal' 0x25b5 //Panther
-              @pushlist 'ShrunkAnimal' 0x20d4 //Hind + Great Hart
-            endif
-            msg 'bank'
-            pause 1000
-            for 0 to 'Animals'
-              while @findtype ShrunkAnimal[] 'any' 'backpack'
-                moveitem 'found' 'bank'
-                pause 100
-              endwhile
-            endfor
-            //If not it will stop
-          else
-            headmsg 'No Bankhive found and you are full! Stopping Script.'
-            stop
-          endif
-        endif
       endwhile
+      //Weightcheck
+      if diffweight < 30 and @findtype 0x91a 'any' 'backpack'
+        msg 'bank'
+        pause 1000
+        for 0 to 'ShrunkAnimal'
+          while @findtype ShrunkAnimal[] 'any' 'backpack'
+            moveitem 'found' 'bank'
+            pause 100
+          endwhile
+        endfor
+        //If not it will stop
+      elseif not @findtype 0x91a 'any' 'backpack'
+        headmsg 'No Bankhive found and you are full! Stopping Script.'
+        stop
+      endif
     endif
   endwhile
   //Removes first Rune Entry so you won't recall to the same spot twice after stopping the script and running it again
