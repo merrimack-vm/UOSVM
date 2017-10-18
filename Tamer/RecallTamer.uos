@@ -36,7 +36,7 @@ if list 'Runes' == 0
 endif
 //While there are Runes in your Runes List
 while list 'Runes' != 0
-  //Checks if the Bears list is complete... if you want to add more, don't forget to change the != value to the amount of entries and do the same in the list below!
+  //Checks if the Bears list is complete... if you want to add more, don't forget to change the != value to the amount of entries and do the same in the lists below, the last list contains graphics of shrunk pets!
   if list 'Animals' != 8
     @clearlist 'Animals'
     @pushlist 'Animals' 0xd5 //Polar
@@ -116,6 +116,8 @@ while list 'Runes' != 0
           target! 'found'
         elseif @injournal 'fail'
           @clearjournal
+        elseif @injournal 'to continue taming'
+          @clearjournal
         elseif diffhits > 10
           miniheal 'self'
           pause 1000
@@ -155,10 +157,23 @@ while list 'Runes' != 0
         if diffweight < 30
           //If you have a bank hive it will move your shrunk pets in there
           if @findtype 0x91a 'any' 'backpack'
+            if not @listexists 'ShrunkAnimal'
+              @createlist 'ShrunkAnimal'
+            endif
+            //List of shrunk pet graphics
+            if list 'ShrunkAnimal' != 6
+              @clearlist 'ShrunkAnimal'
+              @pushlist 'ShrunkAnimal' 0x20e1 //Polar Bear
+              @pushlist 'ShrunkAnimal' 0x2118 //Brown + Black Bear
+              @pushlist 'ShrunkAnimal' 0x211e //Grizzly Bear
+              @pushlist 'ShrunkAnimal' 0x2583 //Cougar
+              @pushlist 'ShrunkAnimal' 0x25b5 //Panther
+              @pushlist 'ShrunkAnimal' 0x20d4 //Hind + Great Hart
+            endif
             msg 'bank'
             pause 1000
             for 0 to 'Animals'
-              while @findtype Animals[] 'any' 'backpack'
+              while @findtype ShrunkAnimal[] 'any' 'backpack'
                 moveitem 'found' 'bank'
                 pause 100
               endwhile
