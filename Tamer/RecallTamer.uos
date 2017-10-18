@@ -37,7 +37,7 @@ if list 'Runes' == 0
 endif
 //While there are Runes in your Runes List
 while list 'Runes' != 0
-  //Checks if the Bears list is complete... if you want to add more, don't forget to change the != value to the amount of entries and do the same in the lists below
+  //Checks if the Animals list is complete... if you want to add more, don't forget to change the != value to the amount of entries and do the same in the lists below
   if list 'Animals' != 8
     @clearlist 'Animals'
     @pushlist 'Animals' 0xd5 //Polar
