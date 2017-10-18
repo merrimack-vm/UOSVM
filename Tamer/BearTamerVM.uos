@@ -114,12 +114,12 @@ for 0 to 'Runes'
             pause 1000
           endif
         endwhile
-        //Wenn er im Journal kein "begin taming" findet tamed er
-        if not @injournal 'begin taming'
+        //Wenn er im Journal kein "start to tame" findet tamed er
+        if not @injournal 'start to tame'
           useskill 'Animal Taming'
           target! 'found'
           //Wenn er failed löscht ers Journal
-        elseif @injournal 'fail taming'
+        elseif @injournal 'fail'
           @clearjournal
           //Heilt sich wenn HP verloren
         elseif diffhits > 10
