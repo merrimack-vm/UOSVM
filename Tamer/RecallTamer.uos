@@ -1,0 +1,177 @@
+//Animal Taming Recall Script
+//Shrinks Animals with a Petleash for BODDing purposes
+//Stores them in the Bank using a Bank Hive once you are full
+//Author: Merrimack
+//======================================================
+//Set alias for Runebook with spots to tame animals
+if not @findalias 'AnimalsRuneBook'
+  promptalias 'AnimalsRuneBook'
+endif
+//Checks if "Animals" list exists
+if not listexists 'Animals'
+  @createlist 'Animals'
+endif
+//Checks if "Runes" list exists
+if not listexists 'Runes'
+  @createlist 'Runes'
+endif
+//If the List doesnt contain all 16 gump ids for "recall", it will add them
+if list 'Runes' == 0
+  pushlist 'Runes' 50
+  pushlist 'Runes' 51
+  pushlist 'Runes' 52
+  pushlist 'Runes' 53
+  pushlist 'Runes' 54
+  pushlist 'Runes' 55
+  pushlist 'Runes' 56
+  pushlist 'Runes' 57
+  pushlist 'Runes' 58
+  pushlist 'Runes' 59
+  pushlist 'Runes' 60
+  pushlist 'Runes' 61
+  pushlist 'Runes' 62
+  pushlist 'Runes' 63
+  pushlist 'Runes' 64
+  pushlist 'Runes' 65
+endif
+//While there are Runes in your Runes List
+while list 'Runes' != 0
+  //Checks if the Bears list is complete... if you want to add more, don't forget to change the != value to the amount of entries and do the same in the list below!
+  if list 'Animals' != 8
+    @clearlist 'Animals'
+    @pushlist 'Animals' 0xd5 //Polar
+    @pushlist 'Animals' 0xa7 //Brown
+    @pushlist 'Animals' 0xd3 //Black
+    @pushlist 'Animals' 0xd4 //Grizzly
+    @pushlist 'Animals' 0x3f //Cougar
+    @pushlist 'Animals' 0xd6 //Panther
+    @pushlist 'Animals' 0xea //GHart
+    @pushlist 'Animals' 0xed //Hind
+  endif
+  //Manacheck
+  while mana < 11
+    if not buffexists 'Meditation'
+      while diffhits > 10
+        miniheal 'self'
+        pause 1000
+      endwhile
+      useskill 'Meditation'
+    endif
+  endwhile
+  //Opening Runebook and recalling
+  useobject 'AnimalsRuneBook'
+  pause 1000
+  replygump 0x59 Runes[0]
+  pause 2500
+  //Taming part
+  while list 'Animals' != 0
+    //If it does not find the animal graphic it removes it from the list
+    if not @findtype Animals[0] 'any' 'ground'
+      @poplist 'Animals' 'front'
+      //Otherwhise it marks it and runs towards it
+    else
+      headmsg '×' 32 'found'
+      while followers < 2
+        while not @inrange 'found' 2
+          if x 'self' < x 'found'
+            for 0 to 2
+              run 'East'
+              pause 100
+            endfor
+          endif
+          if x 'self' > x 'found'
+            for 0 to 2
+              run 'West'
+              pause 100
+            endfor
+          endif
+          if y 'self' < y 'found'
+            for 0 to 2
+              run 'South'
+              pause 100
+            endfor
+          endif
+          if y 'self' > y 'found'
+            for 0 to 2
+              run 'North'
+              pause 100
+            endfor
+          endif
+          //Enable Warmode if your character is stuck or getting attacked, the script will pause until you disable it again.
+          if war
+            headmsg 'Warmode Aktiv, Pausiere!'
+            while war
+              pause 1000
+            endwhile
+          endif
+          //Will heal if your character lost more than 10 hits.
+          if diffhits > 10
+            miniheal 'self'
+            pause 1000
+          endif
+        endwhile
+        //Taming starts here
+        if not @injournal 'start to tame'
+          useskill 'Animal Taming'
+          target! 'found'
+        elseif @injournal 'fail'
+          @clearjournal
+        elseif diffhits > 10
+          miniheal 'self'
+          pause 1000
+        endif
+        //Again, warmode for emergency pause
+        if war
+          headmsg 'Warmode Aktiv, Pausiere!'
+          while war
+            pause 1000
+            if diffhits > 10
+              miniheal 'self'
+              pause 1000
+            endif
+          endwhile
+        endif
+      endwhile
+      //If you have more than one follower it assumes your taming succeeded and will shrink the pet
+      while 'followers' > 1
+        headmsg 'taming complete'
+        @usetype 0x1374 'any' 'backpack'
+        pause 1000
+        target! 'found'
+        @clearjournal
+        //Fills up Animals List again in case running towards the animal you just tamed revealed a new one that was already deleted from the list earlier
+        if list 'Animals' != 8
+          @clearlist 'Animals'
+          @pushlist 'Animals' 0xd5 //Polar
+          @pushlist 'Animals' 0xa7 //Brown
+          @pushlist 'Animals' 0xd3 //Black
+          @pushlist 'Animals' 0xd4 //Grizzly
+          @pushlist 'Animals' 0x3f //Cougar
+          @pushlist 'Animals' 0xd6 //Panther
+          @pushlist 'Animals' 0xea //GHart
+          @pushlist 'Animals' 0xed //Hind
+        endif
+        //Checks if you are close to the weight cap.
+        if diffweight < 30
+          //If you have a bank hive it will move your shrunk pets in there
+          if @findtype 0x91a 'any' 'backpack'
+            msg 'bank'
+            pause 1000
+            for 0 to 'Animals'
+              while @findtype Animals[] 'any' 'backpack'
+                moveitem 'found' 'bank'
+                pause 100
+              endwhile
+            endfor
+            //If not it will stop
+          else
+            headmsg 'No Bankhive found and you are full! Stopping Script.'
+            stop
+          endif
+        endif
+      endwhile
+    endif
+  endwhile
+  //Removes first Rune Entry so you won't recall to the same spot twice after stopping the script and running it again
+  @poplist 'Runes' 'front'
+endwhile
