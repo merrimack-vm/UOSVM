@@ -1,0 +1,224 @@
+// Überdexxer 1.0
+// Script by Merrimack for Vetus Mundus
+// https://vetus-mundus.de/
+//My character has 34 Lower Mana Cost, you may have to adjust the mana values  if you have less.
+//*****Preparations*****
+@unsetalias 'LSactive'
+@unsetalias 'Evade'
+if skill 'Bushido' > 60 and not timerexists 'LightningStrike'
+  createtimer 'LightningStrike'
+endif
+if not timerexists 'Evasion' and skill 'Parrying' > 99
+  createtimer 'Evasion'
+endif
+if skill 'Chivalry' > 49 and not timerexists 'Consecrate'
+  createtimer 'Consecrate'
+endif
+if skill 'Swordsmanship' > 99
+  @createlist 'whirlweps'
+  @pushlist! 'whirlweps' 0xf4b //double axe
+  @pushlist! 'whirlweps' 0x13fb //battle axe
+  @pushlist! 'whirlweps' 0x143e //helli
+  @findlayer 'self' 2
+  for 0 to 'whirlweps'
+    if graphic 'found' == whirlweps[]
+      createtimer 'whirl'
+    endif
+  endfor
+endif
+//Checks if Healer has a tailor key and makes a Cloth Graphic list
+if skill 'Healing' > 49 and @findtype 0x176b 69 'backpack'
+  @createlist 'Clothtypes'
+  @pushlist! 'Clothtypes' 0x1761
+  @pushlist! 'Clothtypes' 0x1762
+  @pushlist! 'Clothtypes' 0x1763
+  @pushlist! 'Clothtypes' 0x1764
+  @pushlist! 'Clothtypes' 0x1765
+  @pushlist! 'Clothtypes' 0x1766
+  @pushlist! 'Clothtypes' 0x1767
+  @pushlist! 'Clothtypes' 0x1760
+  @pushlist! 'Clothtypes' 0x175d
+  @pushlist! 'Clothtypes' 0x175e
+  @pushlist! 'Clothtypes' 0x175f
+endif
+//Checks if Archer is using Crossbow
+if skill 'Archery' > 49
+  if not listexists 'xbows'
+    @createlist 'xbows'
+    @pushlist! 'xbows' 0xf50 //crossbow
+    @pushlist! 'xbows' 0x26c3 //repeating crossbow
+    @pushlist! 'xbows' 0x13fd //heavy xbow
+  endif
+  @unsetalias 'xbow'
+  findlayer 'self' 2
+  for 0 to 'xbows'
+    if graphic 'found' == xbows[]
+      @setalias 'xbow' 'self'
+    endif
+  endfor
+endif
+////// RESTOCK //////
+//Bandages
+if skill 'Healing' > 60 and not @findtype 0xe21 'any' 'backpack' 30
+  if @findtype 0x91a 1161 'backpack'
+    headmsg 'Only 30 bandages left! Trying to get some out of your bank.'
+    msg 'bank'
+    pause 1000
+    if @findtype 0xe21 'any' 'bank' 200 and not @injournal 'Bank Connect'
+      moveitem 'found' 'backpack' 0 0 0 200
+      @movetype 0xe20 'backpack' 'bank'
+    else
+      headmsg 'Bank empty or you are on Felucca! Trying Tailor Key.'
+      clearjournal
+    endif
+  endif
+  pause 1000
+  //Tailor Key Part
+  if not @findtype 0xe21 'any' 'backpack' 30 and @findtype 0x176b 69 'backpack'
+    if not @findtype 0xf9f 'any' 'backpack'
+      headmsg "no scissors found! using a tailor key won't help... get bandages!"
+    else
+      useobject 0x401773f1
+      waitforgump 0x41f8fc19 15000
+      for 0 to 3
+        replygump 0x41f8fc19 21
+        waitforgump 0x41f8fc19 15000
+        if diffweight < 20
+          headmsg 'too heavy, dropping bloody bandages'
+          movetypeoffset 0xe20 'backpack' 'ground' 0 1 0
+        endif
+        if @injournal 'do not have any'
+          headmsg 'Tailor Key Empty! Get Bandages!'
+          clearjournal
+          break
+        endif
+      endfor
+      //Cut Cloth
+      for 0 to 'Clothtypes'
+        if @findtype Clothtypes[] 'any' 'backpack'
+          @usetype 0xf9f 'any' 'backpack'
+          @target! 'found'
+          pause 500
+        endif
+      endfor
+    endif
+  endif
+endif
+//Arrows/Bolts
+if skill 'Archery' > 99
+  //Arrows
+  if not @findalias 'xbow' and not @findtype 0xf3f 'any' 'backpack' 50
+    //Woodworker Key
+    if @findtype 0x176b 88 'backpack'
+      useobject 'found'
+      waitforgump 0xa57934d 15000
+      for 0 to 3
+        replygump 0xa57934d 13
+        pause 100
+      endfor
+      //Bankhive
+    elseif @findtype 0x91a 1161 'backpack'
+      msg 'bank'
+      pause 200
+      if @findtype 0xf3f 'any' 'bank' 200 and not @injournal 'Bank Connect'
+        moveitem 'found' 'backpack' 0 0 0 200
+      else
+        headmsg 'No Arrows in Bank or you are on Felucca!'
+        clearjournal
+      endif
+    endif
+    //Bolts
+  elseif @findalias 'xbow' and not @findtype 0x1bfb 'any' 'backpack' 50
+    //Woodworker Key
+    if @findtype 0x176b 88 'backpack'
+      useobject 'found'
+      waitforgump 0xa57934d 15000
+      for 0 to 3
+        replygump 0xa57934d 14
+        pause 100
+      endfor
+      //Bankhive
+    elseif @findtype 0x91a 1161 'backpack'
+      msg 'bank'
+      pause 200
+      if @findtype 0x1bfb 'any' 'bank' 200 and not @injournal 'Bank Connect'
+        moveitem 'found' 'backpack' 0 0 0 200
+      else
+        headmsg 'No Bolts in Bank or you are on Felucca!'
+        clearjournal
+      endif
+    endif
+  endif
+endif
+//Status Evaluation
+if skill 'Chivalry' > 45
+  if not buffexists 'enemy of one'
+    @setalias 'noeoo' 'self'
+  endif
+  if stam <= 140 or not @buffexists 'divine fury'
+    @setalias 'divineneeded' 'self'
+  endif
+  if timer 'Consecrate' >= 8000
+    @setalias 'consepls' 'self'
+  endif
+endif
+if @findobject 'enemy' and not paralyzed 'self'
+  //Cast Priority Evaluation
+  if diffhits > 50 and not @findalias 'Evade'
+    if mana > 7 and timer 'Evasion' > 15000
+      cast 'Evasion'
+      @setalias 'Evade' 'self'
+    endif
+  elseif @findalias 'divineneeded' and mana > 9
+    cast 'Divine Fury'
+    pause 1500
+    if @buffexists 'Divine Fury' and stam > 150
+      @unsetalias 'divineneeded'
+    endif
+  elseif @findalias 'consepls' and mana > 6
+    cast 'Consecrate Weapon'
+    @unsetalias 'consepls'
+    settimer 'Consecrate' 0
+  elseif @findalias 'noeoo' and mana > 15
+    cast 'Enemy of One'
+    pause 2000
+    if @buffexists 'Enemy of One'
+      @unsetalias 'noeoo'
+    endif
+  elseif timer 'whirl' > 1250
+    findlayer 'self' 2
+    if graphic 'found' == 0xf4b //double axe
+      setability 'secondary' 'on'
+    elseif graphic 'found' == 0x13fb or graphic 'found' == 0x143e //battle axe + helli
+      setability 'primary' 'on'
+    endif
+    @settimer 'whirl' 0
+  elseif timer 'LightningStrike' > 1250 and not war
+    if not findalias 'active' and mana > 15
+      cast "Lightning Strike"
+      @setalias 'LSactive' 'self'
+    endif
+  endif
+  //Annoying Skill Workarounds
+  if @injournal 'You no longer feel that you could deflect any attack.'
+    clearjournal
+    settimer 'Evasion' 0
+    @unsetalias 'Evade'
+  elseif @injournal 'You attack with lightning precision!' 'system'
+    clearjournal
+    settimer 'LightningStrike' 0
+    @unsetalias 'LSactive'
+  endif
+  pause 1000
+else
+  @getenemy 'enemy' 'murderer' 'gray' 'closest'
+  // Honor
+  if skill 'Bushido' > 50 and @hits 'enemy' == maxhits 'enemy'
+    if @inrange 'enemy' 10
+      virtue 'honor'
+      pause 100
+      target! 'enemy'
+    endif
+  endif
+  @attack 'enemy'
+endif
