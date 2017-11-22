@@ -1,0 +1,36 @@
+if @findtype 0x2233 'any' 'ground'
+  headmsg 'X' 33 'found'
+  while not @inrange 'found' 1
+    if @x 'found' > x 'self' and @y 'found' > y 'self'
+      run 'Southeast'
+    elseif @x 'found' < x 'self' and @y 'found' > y 'self'
+      run 'Southwest
+    elseif @x 'found' > x 'self' and @y 'found' < y 'self'
+      run 'Northeast
+    elseif @x 'found' < x 'self' and @y 'found' < y 'self'
+      run 'Northwest
+    elseif @x 'found' > x 'self' and @y 'found' == y 'self'
+      run 'East
+    elseif @x 'found' < x 'self' and @y 'found' == y 'self'
+      run 'West
+    elseif @x 'found' == x 'self' and @y 'found' > y 'self'
+      run 'South'
+    elseif @x 'found' == x 'self' and @y 'found' < y 'self'
+      run 'North'
+    endif
+  endwhile
+  while @findobject 'found'
+    useobject 'found'
+  endwhile
+  if @findtype 0x41bf 'any' 'ground' 'any' 2
+    headmsg 'Ei gefunden!' 10
+    pause 2000
+    moveitem 'found' 'backpack'
+    pause 500
+  else
+    headmsg 'Kein Ei gefunden :(' 10
+  endif
+elseif @findtype 0x34 'any' 'ground'
+  @getenemy 'gray' 'closest'
+  @attack 'enemy'
+endif
