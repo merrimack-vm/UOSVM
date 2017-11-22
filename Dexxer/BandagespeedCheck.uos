@@ -1,0 +1,13 @@
+//Bandage Speed Check:
+//deactivate any kind of bandage script, take off armor with hp increase,
+//put it back on and start this makro.
+clearjournal
+if hits != maxhits
+  createtimer 'bandagespeed'
+  bandageself
+  settimer 'bandagespeed' 0
+  while not @injournal 'finish applying'
+    pause 10
+  endwhile
+  timermsg 'bandagespeed' 1
+endif
