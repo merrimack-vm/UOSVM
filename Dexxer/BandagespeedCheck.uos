@@ -7,7 +7,6 @@ if hits != maxhits
   bandageself
   settimer 'bandagespeed' 0
   while not @injournal 'finish applying'
-    pause 10
   endwhile
   timermsg 'bandagespeed' 1
   removetimer 'bandagespeed'
