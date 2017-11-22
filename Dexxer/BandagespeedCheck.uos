@@ -10,4 +10,5 @@ if hits != maxhits
     pause 10
   endwhile
   timermsg 'bandagespeed' 1
+  removetimer 'bandagespeed'
 endif
