@@ -1,4 +1,4 @@
-// Überdexxer 1.0
+// Überdexxer 1.0a
 // Script by Merrimack for Vetus Mundus
 // https://vetus-mundus.de/
 //My character has 34 Lower Mana Cost, you may have to adjust the mana values  if you have less.
@@ -94,6 +94,7 @@ if skill 'Healing' > 60 and not @findtype 0xe21 'any' 'backpack' 30
           break
         endif
       endfor
+      replygump 0x41f8fc19 0
       //Cut Cloth
       for 0 to 'Clothtypes'
         if @findtype Clothtypes[] 'any' 'backpack'
@@ -117,6 +118,7 @@ if skill 'Archery' > 99
         replygump 0xa57934d 13
         pause 100
       endfor
+      replygump 0xa57934d 0
       //Bankhive
     elseif @findtype 0x91a 1161 'backpack'
       msg 'bank'
@@ -138,6 +140,7 @@ if skill 'Archery' > 99
         replygump 0xa57934d 14
         pause 100
       endfor
+      replygump 0xa57934d 0
       //Bankhive
     elseif @findtype 0x91a 1161 'backpack'
       msg 'bank'
