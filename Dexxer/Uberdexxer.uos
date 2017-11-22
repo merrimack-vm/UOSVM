@@ -7,13 +7,13 @@
 @unsetalias 'LSactive'
 @unsetalias 'Evade'
 if skill 'Bushido' > 60 and not timerexists 'LightningStrike'
-  createtimer 'LightningStrike'
+  @createtimer 'LightningStrike'
 endif
 if not timerexists 'Evasion' and skill 'Parrying' > 99
-  createtimer 'Evasion'
+  @createtimer 'Evasion'
 endif
 if skill 'Chivalry' > 49 and not timerexists 'Consecrate'
-  createtimer 'Consecrate'
+  @createtimer 'Consecrate'
 endif
 if skill 'Swordsmanship' > 99
   @createlist 'whirlweps'
@@ -22,8 +22,8 @@ if skill 'Swordsmanship' > 99
   @pushlist! 'whirlweps' 0x143e //helli
   @findlayer 'self' 2
   for 0 to 'whirlweps'
-    if graphic 'found' == whirlweps[]
-      createtimer 'whirl'
+    if @graphic 'found' == whirlweps[]
+      @createtimer 'whirl'
     endif
   endfor
 endif
@@ -51,9 +51,9 @@ if skill 'Archery' > 49
     @pushlist! 'xbows' 0x13fd //heavy xbow
   endif
   @unsetalias 'xbow'
-  findlayer 'self' 2
+  @findlayer 'self' 2
   for 0 to 'xbows'
-    if graphic 'found' == xbows[]
+    if @graphic 'found' == xbows[]
       @setalias 'xbow' 'self'
     endif
   endfor
@@ -66,7 +66,7 @@ if skill 'Healing' > 60 and not @findtype 0xe21 'any' 'backpack' 30
     msg 'bank'
     pause 1000
     if @findtype 0xe21 'any' 'bank' 200 and not @injournal 'Bank Connect'
-      moveitem 'found' 'backpack' 0 0 0 200
+      @moveitem 'found' 'backpack' 0 0 0 200
       @movetype 0xe20 'backpack' 'bank'
     else
       headmsg 'Bank empty or you are on Felucca! Trying Tailor Key.'
@@ -79,10 +79,10 @@ if skill 'Healing' > 60 and not @findtype 0xe21 'any' 'backpack' 30
     if not @findtype 0xf9f 'any' 'backpack'
       headmsg "no scissors found! using a tailor key won't help... get bandages!"
     else
-      useobject 0x401773f1
+      @useobject 0x401773f1
       waitforgump 0x41f8fc19 15000
       for 0 to 3
-        replygump 0x41f8fc19 21
+        @replygump 0x41f8fc19 21
         waitforgump 0x41f8fc19 15000
         if diffweight < 20
           headmsg 'too heavy, dropping bloody bandages'
@@ -90,11 +90,11 @@ if skill 'Healing' > 60 and not @findtype 0xe21 'any' 'backpack' 30
         endif
         if @injournal 'do not have any'
           headmsg 'Tailor Key Empty! Get Bandages!'
-          clearjournal
+          @clearjournal
           break
         endif
       endfor
-      replygump 0x41f8fc19 0
+      @replygump 0x41f8fc19 0
       //Cut Cloth
       for 0 to 'Clothtypes'
         if @findtype Clothtypes[] 'any' 'backpack'
@@ -112,7 +112,7 @@ if skill 'Archery' > 99
   if not @findalias 'xbow' and not @findtype 0xf3f 'any' 'backpack' 50
     //Woodworker Key
     if @findtype 0x176b 88 'backpack'
-      useobject 'found'
+      @useobject 'found'
       waitforgump 0xa57934d 15000
       for 0 to 3
         replygump 0xa57934d 13
@@ -134,7 +134,7 @@ if skill 'Archery' > 99
   elseif @findalias 'xbow' and not @findtype 0x1bfb 'any' 'backpack' 50
     //Woodworker Key
     if @findtype 0x176b 88 'backpack'
-      useobject 'found'
+      @useobject 'found'
       waitforgump 0xa57934d 15000
       for 0 to 3
         replygump 0xa57934d 14
@@ -190,7 +190,7 @@ if @findobject 'enemy' and not paralyzed 'self'
       @unsetalias 'noeoo'
     endif
   elseif @timer 'whirl' > 1250
-    findlayer 'self' 2
+    @findlayer 'self' 2
     if graphic 'found' == 0xf4b //double axe
       setability 'secondary' 'on'
     elseif graphic 'found' == 0x13fb or graphic 'found' == 0x143e //battle axe + helli
