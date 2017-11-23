@@ -1,4 +1,4 @@
-// Überdexxer 1.0b
+// Überdexxer 1.0c
 // Script by Merrimack for Vetus Mundus
 // https://vetus-mundus.de/
 //My character has 34 Lower Mana Cost, you may have to adjust the mana values  if you have less.
@@ -159,7 +159,9 @@ if skill 'Chivalry' > 45
   if not buffexists 'enemy of one'
     @setalias 'noeoo' 'self'
   endif
-  if stam <= 140 or not @buffexists 'divine fury'
+  if skill 'Archery' > 49 and not @buffexists 'divine fury'
+    @setalias 'divineneeded' 'self'
+  elseif stam <= 140
     @setalias 'divineneeded' 'self'
   endif
   if @timer 'Consecrate' >= 8000
