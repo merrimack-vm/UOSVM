@@ -1,4 +1,4 @@
-// Überdexxer 1.0c
+// Überdexxer 1.0d
 // Script by Merrimack for Vetus Mundus
 // https://vetus-mundus.de/
 //My character has 34 Lower Mana Cost, you may have to adjust the mana values  if you have less.
@@ -199,8 +199,8 @@ if @findobject 'enemy' and not paralyzed 'self'
       setability 'primary' 'on'
     endif
     @settimer 'whirl' 0
-  elseif @timer 'LightningStrike' > 1250 and not war
-    if not findalias 'active' and mana > 15
+  elseif @timer 'LightningStrike' > 1250
+    if not findalias 'LSactive' and mana > 15
       cast "Lightning Strike"
       @setalias 'LSactive' 'self'
     endif
