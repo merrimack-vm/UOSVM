@@ -1,0 +1,37 @@
+These are only parts of full scripts and to help creating scripts.
+
+
+Prevent Blood Oath DMG:
+
+while buffexists 'Blood Oath'
+  warmode 'off'
+endwhile
+warmode 'on'
+
+
+play slots:
+
+replygump 0x5a48fab2 12
+waitforgump 0x5a48fab2 15000
+
+
+fill slot machine:
+
+replygump 0x5a48fab2 14
+waitforgump 0x5a48fab2 15000
+
+
+invisibility:
+
+if not buffexists 'Invisibility'
+  autotargetself
+  cast "Invisibility"
+  pause 2200
+endif
+
+
+attack:
+
+getenemy 'enemy' 'closest' 'non-friend' 'criminal'
+pause 50
+attack 'enemy'
