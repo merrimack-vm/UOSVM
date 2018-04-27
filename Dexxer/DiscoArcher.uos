@@ -1,0 +1,110 @@
+//============================================================//
+//================= Merri's Discoarcher  1.0 =================//
+//Also uses Chiv and Double Strike (intended for Yumi Archers)//
+//========================= Loop it! =========================//
+//================= Made for vetus-mundus.de =================//
+//============================================================//
+while not dead 'self'
+  if not listexists 'discorded'
+    @createlist 'discorded'
+  endif
+  if not listexists 'instruments'
+    @createlist 'instruments'
+  endif
+  if @list 'instruments' != 6
+    @pushlist! 'instruments' 0xe9c //Drums
+    @pushlist! 'instruments' 0xe9d //Tambourine without cloth
+    @pushlist! 'instruments' 0xeb1 //Standing Harp
+    @pushlist! 'instruments' 0xeb2 //Lap Harp
+    @pushlist! 'instruments' 0xeb3 //Lute
+    @pushlist! 'instruments' 0xeb1 //Standing Harp
+  endif
+  @unsetalias 'active'
+  @clearjournal
+  @unsetalias 'found'
+  if not @findobject 'enemy' 'any' 'any' 'any' 16
+    @getenemy 'criminal' 'enemy' 'murderer' 'gray' 'nearest'
+    attack 'enemy'
+    pause 100
+    @setalias 'disctarget' 'enemy'
+  endif
+  if @findobject 'disctarget' 'any' 'any' 'any' 16 not @inlist 'discorded' 'disctarget'
+    @useskill 'Discordance'
+    pause 100
+    if @injournal 'What instrument shall you play'
+      for 0 to 'instruments'
+        if not @findalias 'discinst' and @findtype instruments[] 'any' 'backpack'
+          @setalias 'discinst' 'found'
+        endif
+      endfor
+      autotargetobject 'discinst'
+      @unsetalias 'discinst'
+    endif
+    target! 'disctarget'
+    pause 100
+    canceltarget
+    pause 900
+    if @findobject 'disctarget' and @injournal 'cannot be seen'
+      @unsetalias 'disctarget'
+      @clearjournal
+    elseif @findobject 'disctarget' and @injournal 'jarring music'
+      @pushlist 'discorded' 'disctarget'
+      @unsetalias 'disctarget'
+      @clearjournal
+    elseif @findobject 'disctarget' and @injournal 'already in'
+      @pushlist 'discorded' 'disctarget'
+      @unsetalias 'disctarget'
+      @clearjournal
+    elseif @findobject 'disctarget' and @injournal 'would have no effect'
+      @pushlist 'discorded' 'disctarget'
+      @unsetalias 'disctarget'
+      @clearjournal
+    endif
+  else
+    @unsetalias 'disctarget'
+  endif
+  if buffexists 'Blood Oath' and war
+    warmode 'off'
+    pause 500
+  elseif not buffexists 'Blood Oath' and not war
+    warmode 'on'
+  endif
+  if @findobject 'enemy' 'any' 'any' 'any' 16
+    if not buffexists 'enemy of one' and mana > 14
+      cast 'enemy of one'
+      pause 2000
+    endif
+    if stam <= 120 or not @buffexists 'divine fury'
+      if mana > 9
+        cast "Divine Fury"
+        pause 1100
+      endif
+      pause 1700
+    endif
+    if not timerexists 'Consecrate'
+      createtimer 'Consecrate'
+    endif
+    if timer 'Consecrate' >= 8000 and mana > 7
+      cast "Consecrate Weapon"
+      settimer 'Consecrate' 0
+      pause 2300
+    endif
+    if not timerexists 'DoubleStrike'
+      createtimer 'DoubleStrike'
+    endif
+    if timer 'DoubleStrike' > 3100 and mana > 18
+      if not findalias 'active'
+        @setability 'secondary' 'on'
+        @setalias 'active' 'self'
+      endif
+    endif
+    if @injournal 'You launch two shots at once!' 'system'
+      clearjournal
+      settimer 'DoubleStrike' 0
+      @unsetalias 'active'
+    endif
+  elseif stam < 30 and mana > 9
+    cast "Divine Fury"
+    pause 1100
+  endif
+endwhile
