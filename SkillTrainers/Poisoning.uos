@@ -1,6 +1,6 @@
-//Applies Poison to one cooked fish steak from your backpack at a time, then stacks them into a stack bag and unstacks them back to your backpack
+//Applies Poison to one cooked fish steak from your bp at a time, then stacks them into a stack bag and unstacks them back to your bp
 //Doubleclicks Potion Keg if it ran out of Poison Potions
-//Only have one kind of potion + keg in your backpack while using, some potions share the same graphic.
+//Only have one kind of potion + keg in your bp while using, some potions share the same graphic.
 //Recommended Order:
 // 0-30: Train at Thief NPC
 // 30-40: Lesser Poison
