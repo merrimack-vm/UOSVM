@@ -1,7 +1,6 @@
-//Applies Poison to one cooked fish steak from your backpack at a time, then starts from scratch
+//Applies Poison to one cooked fish steak from your backpack at a time, then stacks them into a stack bag and unstacks them back to your backpack
 //Doubleclicks Potion Keg if it ran out of Poison Potions
 //Only have one kind of potion + keg in your backpack while using, some potions share the same graphic.
-//At least on my shard (vetus-mundus.de) Poisoning gain is 8x8 based, so use a boat.
 //Recommended Order:
 // 0-30: Train at Thief NPC
 // 30-40: Lesser Poison
@@ -16,19 +15,23 @@ if not @listexists 'fishsteaks'
   @createlist 'fishsteaks'
 endif
 if @list 'fishsteaks' == 0
-  while @findtype 0x97b 'any' 'backpack'
-    @pushlist 'fishsteaks' 'found'
+  while contents 'stackbag' != 0
+    @findtype 0x97b 0 'stackbag'
+    @moveitem! 'found' 'backpack' 0 0 0 1
+    pause 500
+    @pushlist! 'fishsteaks' 'found'
   endwhile
 endif
 for 0 to 'fishsteaks'
   if @findtype 0xf0a 'any' 'backpack'
-    autotargetobject 'found'
+    @autotargetobject 'found'
     @useskill 'Poisoning'
     pause 500
-    target! fishsteaks[]
-    pause 500
-    poplist 'fishsteaks' 'front'
-    pause 8000
+    @target! fishsteaks[]
+    pause 5000
+    @moveitem fishsteaks[] 'stackbag'
+    @poplist 'fishsteaks' 'front'
+    pause 5000
   else
     for 0 to 10
       @usetype 0x1940 'any' 'backpack'
