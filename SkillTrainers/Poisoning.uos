@@ -1,0 +1,31 @@
+//Applies Poison to one cooked fish steak from your backpack at a time, then starts from scratch
+//Doubleclicks Potion Keg if it ran out of Poison Potions
+//Only have one kind of potion + keg in your backpack while using, some potions share the same graphic.
+//======================
+//fish steaks 0x97b
+//poison potion 0xf0a
+//keg 0x1940
+if not @listexists 'fishsteaks'
+  @createlist 'fishsteaks'
+endif
+if @list 'fishsteaks' == 0
+  while @findtype 0x97b 'any' 'backpack'
+    @pushlist 'fishsteaks' 'found'
+  endwhile
+endif
+for 0 to 'fishsteaks'
+  if @findtype 0xf0a 'any' 'backpack'
+    autotargetobject 'found'
+    @useskill 'Poisoning'
+    pause 500
+    target! fishsteaks[]
+    pause 500
+    poplist 'fishsteaks' 'front'
+    pause 8000
+  else
+    for 0 to 10
+      @usetype 0xf0a 'any' 'backpack'
+      pause 100
+    endfor
+  endif
+endfor
