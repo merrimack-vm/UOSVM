@@ -11,6 +11,10 @@
 //fish steaks 0x97b
 //poison potion 0xf0a
 //keg 0x1940
+if not @findalias 'stackbag'
+  headmsg 'select bag used for stacking fish (not your backpack)'
+  promptalias 'stackbag'
+endif
 if not @listexists 'fishsteaks'
   @createlist 'fishsteaks'
 endif
