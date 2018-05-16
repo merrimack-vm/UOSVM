@@ -1,6 +1,7 @@
 //Applies Poison to one cooked fish steak from your backpack at a time, then starts from scratch
 //Doubleclicks Potion Keg if it ran out of Poison Potions
 //Only have one kind of potion + keg in your backpack while using, some potions share the same graphic.
+//At least on my shard (vetus-mundus.de) Poisoning gain is 8x8 based, so use a boat.
 //Recommended Order:
 // 0-30: Train at Thief NPC
 // 30-40: Lesser Poison
