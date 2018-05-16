@@ -24,7 +24,7 @@ for 0 to 'fishsteaks'
     pause 8000
   else
     for 0 to 10
-      @usetype 0xf0a 'any' 'backpack'
+      @usetype 0x1940 'any' 'backpack'
       pause 100
     endfor
   endif
