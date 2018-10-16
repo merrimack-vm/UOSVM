@@ -1,0 +1,123 @@
+//ABC Yumi Archer
+//v1.0
+//Double Strike Edition
+//Tested with:
+//37 LMC
+//0 FC 0 FCR
+//300 Combat Skill
+//=================
+//Needs "arrows" and "bandages" counters (Agent Tab)
+//=================
+@createlist 'castme'
+@clearlist 'castme'
+@unsetalias 'active'
+@removetimer 'noarrowmsg'
+@removetimer 'nobandiemsg'
+if not timerexists 'Consacrate'
+  createtimer 'Consacrate'
+endif
+if not timerexists 'DoubleStrike'
+  createtimer 'DoubleStrike'
+endif
+//Open Quiver to see proper Arrow Count
+if @findlayer 'self' 20
+  useobject 'found'
+  pause 500
+endif
+//Counter Check
+if not counter 'bandages' > 0
+  headmsg 'Either no Bandages or no "bandages" Counter found!' 237 'self'
+endif
+if not counter 'arrows' > 0
+  headmsg 'Either no Arrows or no "arrows" Counter found!' 237 'self'
+endif
+//Script start - runs only while alive
+while not dead 'self'
+  @getenemy 'enemy' 'criminal' 'murderer' 'closest'
+  attack 'enemy'
+  //Bloodoath Check
+  if buffexists 'Blood Oath'
+    headmsg 'Blood Oath! Pausing...' 237 'self'
+    while buffexists 'Blood Oath'
+      warmode 'off'
+      pause 500
+    endwhile
+    headmsg 'Blood Oath Ended.' 70 'self'
+    warmode 'on'
+    //Bandage Check
+  elseif counter 'bandages' < 100
+    if not timerexists 'nobandiemsg'
+      @createtimer 'nobandiemsg'
+      @settimer 'nobandiemsg' 15000
+    endif
+    if timer 'nobandiemsg' > 14999
+      headmsg 'less than 50 bandages' 237 'self'
+      partymsg 'less than 50 bandages!'
+      @settimer 'nobandiemsg' 0
+    endif
+    //Arrow Check
+  elseif counter 'arrows' < 51
+    //WoodWorker Key Check
+    if @findtype 0x176b 88 'backpack'
+      useobject 'found'
+      waitforgump 0xa57934d 15000
+      for 0 to 3
+        replygump 0xa57934d 13
+        waitforgump 0xa57934d 15000
+      endfor
+      replygump 0xa57934d 0
+      if @findlayer 'self' 20
+        @movetype 0xf3f 'backpack' 'found'
+      endif
+      //If no WoodWorker Key Available spam party+headmsg
+    else
+      if not timerexists 'noarrowmsg'
+        @createtimer 'noarrowmsg'
+        @settimer 'noarrowmsg' 15000
+      endif
+      if timer 'noarrowmsg' > 14999
+        headmsg 'less than 50 arrows' 45 'self'
+        partymsg 'less than 50 arrows!'
+        @settimer 'noarrowmsg' 0
+      endif
+    endif
+  endif
+  //Push necessary buffs into list
+  if not buffexists 'enemy of one'
+    @pushlist! 'castme' 'enemy of one'
+  elseif not buffexists 'divine fury'
+    @pushlist! 'castme' 'divine fury'
+  elseif stam < 160
+    @pushlist! 'castme' 'divine fury'
+  elseif timer 'Consacrate' >= 8000
+    @pushlist! 'castme' 'Consecrate Weapon'
+  elseif timer 'DoubleStrike' > 3100 and not @findalias 'active'
+    @pushlist! 'castme' 'DoubleStrike'
+  endif
+  //Casting stuff in list if an enemy is closeby
+  if @findobject 'enemy' 'any' 'ground' 'any' 10
+    if @inlist 'castme' 'Consecrate Weapon' and mana > 6
+      cast "Consecrate Weapon"
+      settimer 'Consacrate' 0
+      @poplist 'castme' 'Consecrate Weapon'
+      pause 500
+    elseif @inlist 'castme' 'divine fury' and mana > 9
+      cast "Divine Fury"
+      pause 1100
+      @poplist 'castme' 'divine fury'
+    elseif @inlist 'castme' 'enemy of one' and mana > 14
+      pause 20
+      cast 'enemy of one'
+      pause 600
+      @poplist 'castme' 'enemy of one'
+    elseif @inlist 'castme' 'DoubleStrike' and mana > 17
+      @setability 'secondary' 'on'
+      @setalias 'active' 'self'
+    endif
+  endif
+  if @injournal 'You launch two shots at once!' 'system'
+    clearjournal
+    settimer 'DoubleStrike' 0
+    @unsetalias 'active'
+  endif
+endwhile
