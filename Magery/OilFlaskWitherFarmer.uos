@@ -1,5 +1,7 @@
 @getenemy 'criminal' 'enemy' 'murderer'
-if @findobject 'enemy' 'any' 'ground' 'any' 5
+if @diffhits 'self' > 10
+  miniheal 'self'
+elseif @findobject 'enemy' 'any' 'ground' 'any' 5
   cast 'Wither'
   pause 500
 endif
@@ -25,6 +27,7 @@ else
   pause 500
   @useobject 'found'
   pause 200
+  //Oil Flask
   @movetype 0x1c18 'found' 'backpack'
   pause 200
   ignoreobject 'found'
