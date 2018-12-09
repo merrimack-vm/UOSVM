@@ -1,0 +1,31 @@
+@getenemy 'criminal' 'enemy' 'murderer'
+if @findobject 'enemy' 'any' 'ground' 'any' 5
+  cast 'Wither'
+  pause 500
+endif
+if @findtype 0x2006 'any' 'ground' 'any' 10 and not @inrange 'found' 2
+  if @x 'found' > x 'self' and @y 'found' > y 'self'
+    run 'Southeast'
+  elseif @x 'found' < x 'self' and @y 'found' > y 'self'
+    run 'Southwest'
+  elseif @x 'found' > x 'self' and @y 'found' < y 'self'
+    run 'Northeast'
+  elseif @x 'found' < x 'self' and @y 'found' < y 'self'
+    run 'Northwest'
+  elseif @x 'found' > x 'self' and @y 'found' == y 'self'
+    run 'East'
+  elseif @x 'found' < x 'self' and @y 'found' == y 'self'
+    run 'West'
+  elseif @x 'found' == x 'self' and @y 'found' > y 'self'
+    run 'South'
+  elseif @x 'found' == x 'self' and @y 'found' < y 'self'
+    run 'North'
+  endif
+else
+  pause 500
+  @useobject 'found'
+  pause 200
+  @movetype 0x1c18 'found' 'backpack'
+  pause 200
+  ignoreobject 'found'
+endif
