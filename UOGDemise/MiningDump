@@ -1,0 +1,38 @@
+//================================================================//
+//=============== Merrimack's Recall Mining Script ===============//
+//======================= v1.0 Item Dumper =======================//
+//====================== Made for UO Demise ======================//
+//================================================================//
+// Needs two organizers called 'oreunload' and 'gemunload'
+// Needs a Macro called Miner to go back to mining
+//================================================================//
+// Change your Runebook ID here
+useobject 0x44ccdea7
+waitforgump 0x554b87f3 15000
+// Recall Gump IDs are 5,11,17...up to 95 for the last rune in the book.
+replygump 0x554b87f3 95
+pause 2000
+// Dump Chest Serial
+if inrange 0x415bf06c 3
+  useobject 0x415bf06c
+  pause 500
+  organizer 'oreunload'
+  while organizing
+    pause 200
+  endwhile
+  organizer 'gemunload'
+  while organizing
+    pause 200
+  endwhile
+else
+  headmsg 'Unload Container not in Range. Aborting.'
+  stop
+endif
+if list 'MiningBook' != 0 or list 'Runes' != 0
+  //Here he ends up if he isn't done yet.
+  playmacro 'Miner'
+else
+  //Here he ends up if he is done.You can just restart the Miner if you want.
+  headmsg 'starting from scratch'
+  playmacro 'Miner'
+endif
