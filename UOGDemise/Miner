@@ -127,7 +127,7 @@ while list 'MiningBook' != 0
           endwhile
           settimer 'failsafe' 0
         elseif diffweight < 100
-          pause 200
+          pause 2000
           playmacro 'MiningDump'
         endif
         while diffhits > 10
@@ -202,5 +202,5 @@ while mana < 11
   endwhile
 endwhile
 removetimer 'failsafe'
-pause 200
+pause 2000
 playmacro 'MiningDump'
