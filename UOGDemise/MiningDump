@@ -24,9 +24,6 @@ if inrange 0x415bf06c 3
   while organizing
     pause 200
   endwhile
-else
-  headmsg 'Unload Container not in Range. Aborting.'
-  stop
 endif
 if list 'MiningBook' != 0 or list 'Runes' != 0
   //Here he ends up if he isn't done yet.
