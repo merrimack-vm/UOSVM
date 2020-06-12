@@ -22,7 +22,7 @@ while @counttype 0xe86 0 'backpack' < 2
     stop
   endif
 endwhile
-//======================================================
+//================================================================//
 //Adjust the amount of Mining Books here:
 if not @findobject 'MiningBookOne'
   promptalias 'MiningBookOne'
@@ -39,7 +39,7 @@ if not listexists 'MiningBook' or list 'MiningBook' == 0
   pushlist! 'MiningBook' 'MiningBookTwo'
   pushlist! 'MiningBook' 'MiningBookThree'
 endif
-//======================================================
+//================================================================//
 // Script Starts here
 @removelist 'MiningNope'
 while list 'MiningBook' != 0
