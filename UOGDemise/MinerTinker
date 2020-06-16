@@ -1,0 +1,220 @@
+//================================================================//
+//================= Merri's Recall Mining Script =================//
+//======================= v1.1 TinkerMiner =======================//
+//====================== Made for UO Demise ======================//
+//================================================================//
+// Needs a soundfile called 'warnung.wav' in UOS/Sounds
+// Needs a Macro called MiningDump to tp back and unload
+// Uses Magery to heal and shoot fireballs at nearby mobs
+// Uses Tinkering Tool to create pickaxe if needed
+//================================================================//
+// Preps, change serials for pickaxe containers here
+// If you want to change the mining tool graphic also change line 165
+warmode 'off'
+pause 1000
+if @counttype 0xe86 0 'backpack' < 2 and @inrange 0x43f6c0f2 3
+  useobject 0x43f6c0f2
+  pause 1000
+  useobject 0x43161dca
+  pause 1000
+  while @counttype 0xe86 0 'backpack' < 2
+    usetype 0x1eb8 0 'backpack'
+    pause 500
+    replygump 0x38920abd 8
+    pause 500
+    if counttype 0x1bf2 0 'backpack' < 10
+      movetype 0x1bf2 0x43161dca 'backpack' 0 0 0 0 10
+    endif
+    if counttype 0x1eb8 0 'backpack' < 2
+      //Tinker's Tools
+      replygump 0x38920abd 23
+      pause 1000
+    else
+      replygump 0x38920abd 114
+      pause 1000
+    endif
+  endwhile
+  replygump 0x38920abd 0
+endif
+//======================================================
+//Adjust the amount of Mining Books here:
+if not @findobject 'MiningBookOne'
+  promptalias 'MiningBookOne'
+endif
+if not @findobject 'MiningBookTwo'
+  promptalias 'MiningBookTwo'
+endif
+if not @findobject 'MiningBookThree'
+  promptalias 'MiningBookThree'
+endif
+if not listexists 'MiningBook' or list 'MiningBook' == 0
+  createlist 'MiningBook'
+  pushlist! 'MiningBook' 'MiningBookOne'
+  pushlist! 'MiningBook' 'MiningBookTwo'
+  pushlist! 'MiningBook' 'MiningBookThree'
+endif
+//======================================================
+// Script Starts here
+@removelist 'MiningNope'
+while list 'MiningBook' != 0
+  if not listexists 'Runes' or list 'Runes' == 0
+    @createlist 'Runes'
+    pushlist 'Runes' 5
+    pushlist 'Runes' 11
+    pushlist 'Runes' 17
+    pushlist 'Runes' 23
+    pushlist 'Runes' 29
+    pushlist 'Runes' 35
+    pushlist 'Runes' 41
+    pushlist 'Runes' 47
+    pushlist 'Runes' 53
+    pushlist 'Runes' 59
+    pushlist 'Runes' 65
+    pushlist 'Runes' 71
+    pushlist 'Runes' 77
+    pushlist 'Runes' 83
+    pushlist 'Runes' 89
+    pushlist 'Runes' 95
+  endif
+  while list 'Runes' != 0
+    clearjournal
+    while mana < 11
+      while not buffexists 'Meditation'
+        while diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 1000
+        endwhile
+        @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+        while @findobject 'enemy' and @inrange 'enemy' 5
+          if diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 100
+          endif
+          cast 'Fireball' 'enemy'
+          pause 200
+        endwhile
+        useskill 'Meditation'
+        pause 200
+      endwhile
+    endwhile
+    pause 200
+    useobject MiningBook[0]
+    pause 1000
+    headmsg 'Book Serial'
+    headmsg MiningBook[0]
+    replygump 0x554b87f3 Runes[0]
+    headmsg 'Rune'
+    headmsg Runes[0]
+    pause 2000
+    // Mining
+    if not @listexists 'offsetx' or list 'offsetx' != 8
+      @createlist 'offsetx'
+      @pushlist! 'offsetx' 0
+      @pushlist! 'offsetx' 1
+      @pushlist! 'offsetx' 1
+      @pushlist! 'offsetx' 1
+      @pushlist! 'offsetx' 0
+      @pushlist! 'offsetx' -1
+      @pushlist! 'offsetx' -1
+      @pushlist! 'offsetx' -1
+    endif
+    if not @listexists 'offsety' or list 'offsety' != 8
+      @createlist 'offsety'
+      @pushlist! 'offsety' -1
+      @pushlist! 'offsety' -1
+      @pushlist! 'offsety' 0
+      @pushlist! 'offsety' 1
+      @pushlist! 'offsety' 1
+      @pushlist! 'offsety' 1
+      @pushlist! 'offsety' 0
+      @pushlist! 'offsety' -1
+    endif
+    createtimer 'failsafe'
+    while list 'offsety' != 0
+      while not listexists 'MiningNope'
+        if war
+          headmsg 'warmode aktiv, pausiere'
+          while war
+            pause 200
+          endwhile
+          settimer 'failsafe' 0
+        elseif diffweight < 100 or @counttype 0xe86 0 'backpack' < 1
+          pause 2000
+          playmacro 'MiningDump'
+        endif
+        while diffhits > 10
+          miniheal 'self'
+          playsound 'warnung.wav'
+          pause 1000
+          settimer 'failsafe' 0
+        endwhile
+        @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+        while @findobject 'enemy' and @inrange 'enemy' 5
+          if diffhits > 10
+            miniheal 'self'
+            playsound 'warnung.wav'
+            pause 100
+          endif
+          cast 'Fireball' 'enemy'
+          pause 200
+          settimer 'failsafe' 0
+        endwhile
+        autotargettileoffset offsetx[0] offsety[0] 0
+        usetype 0xe86 'any' 'backpack'
+        pause 1000
+        if @injournal 'no metal here to mine' 'system' or @injournal 'mine that' 'system'
+          createlist 'MiningNope'
+        elseif @injournal 'Target cannot be seen.' 'system' or @injournal 'mine there' 'system'
+          createlist 'MiningNope'
+        elseif @injournal 'dig some' 'system' or @injournal 'loosen some rocks' 'system'
+          settimer 'failsafe' 0
+        elseif timer 'failsafe' > 5000
+          headmsg 'timer expired, continuing with next side'
+          createlist 'MiningNope'
+        endif
+      endwhile
+      removelist 'MiningNope'
+      sysmsg 'vein empty!' 24
+      clearjournal
+      poplist 'offsetx' 'front'
+      poplist 'offsety' 'front'
+      settimer 'failsafe' 0
+      while not listexists 'MiningNope' and war
+        headmsg 'warmode aktiv, pausiere'
+        while war
+          pause 200
+        endwhile
+        settimer 'failsafe' 0
+      endwhile
+    endwhile
+    poplist 'Runes' 'front'
+  endwhile
+  poplist 'MiningBook' 'front'
+endwhile
+// GTFO
+while mana < 11
+  while not buffexists 'Meditation'
+    while diffhits > 10
+      miniheal 'self'
+      playsound 'warnung.wav'
+      pause 1000
+    endwhile
+    @getenemy 'closest' 'nearest' 'enemy' 'criminal' 'gray'
+    while @findobject 'enemy' and @inrange 'enemy' 5
+      if diffhits > 10
+        miniheal 'self'
+        playsound 'warnung.wav'
+        pause 100
+      endif
+      cast 'Fireball' 'enemy'
+      pause 200
+    endwhile
+    useskill 'Meditation'
+    pause 200
+  endwhile
+endwhile
+removetimer 'failsafe'
+pause 2000
+playmacro 'MiningDump'
